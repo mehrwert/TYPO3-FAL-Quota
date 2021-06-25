@@ -11,8 +11,9 @@ namespace Mehrwert\FalQuota\Hooks;
 
 use Mehrwert\FalQuota\Utility\QuotaUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Lang\LanguageService;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Class DatamapDataHandlerHook to check and format TCA values for quota fields in sys_file_storage records
@@ -106,6 +107,11 @@ class DatamapDataHandlerHook
      */
     protected function getLanguageService(): LanguageService
     {
-        return $GLOBALS['LANG'];
+        if (VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) < 10000000) {
+            $languageService = $GLOBALS['LANG'];
+        } else {
+            $languageService = GeneralUtility::makeInstance(LanguageService::class);
+        }
+        return $languageService;
     }
 }
