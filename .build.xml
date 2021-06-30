@@ -15,16 +15,10 @@
     </target>
 
     <target name="php_cs_fixer" description="Find coding standard violations using PHP-CS-Fixer">
-        <exec executable="php-cs-fixer" failonerror="true">
-            <arg value="fix"/>
-            <arg value="--verbose"/>
-            <arg value="--dry-run"/>
-            <arg value="--using-cache=no"/>
-            <arg value="--diff"/>
-            <arg line="--diff-format udiff"/>
-            <arg line="--path-mode=intersection"/>
-            <arg value="--config=.php_cs.dist"/>
-            <arg path="${basedir}"/>
+        <exec executable="composer" failonerror="true">
+            <arg value="cs:fix" />
+            <arg value="--" />
+            <arg value="--dry-run" />
         </exec>
     </target>
 
@@ -34,6 +28,8 @@
             <fileset dir="${basedir}">
                 <include name="**/*.php"/>
                 <exclude name="phpunit/**"/>
+                <exclude name="**/.build/**"/>
+                <exclude name="**/.ddev/**"/>
                 <exclude name="**/Build/**"/>
                 <exclude name="**/Tests/**"/>
                 <exclude name="**/lib/**"/>

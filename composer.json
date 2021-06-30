@@ -30,14 +30,14 @@
     "typo3/cms-extensionmanager": ">=9.5.0,<=10.4.99",
     "typo3/cms-filelist": ">=9.5.0,<=10.4.99",
     "typo3/cms-fluid": ">=9.5.0,<=10.4.99",
-    "typo3/cms-frontend": ">=9.5.0,<=10.4.99",
-    "typo3/cms-install": ">=9.5.0,<=10.4.99",
     "typo3/cms-scheduler": ">=9.5.0,<=10.4.99",
     "typo3fluid/fluid": "^2.7"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^2.14",
-    "roave/security-advisories": "dev-master"
+    "roave/security-advisories": "dev-master",
+    "typo3/cms-frontend": ">=9.5.0,<=10.4.99",
+    "typo3/cms-install": ">=9.5.0,<=10.4.99"
   },
   "suggest": {
     "ext-intl": "*"
