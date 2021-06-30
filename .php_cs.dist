@@ -82,7 +82,7 @@ return PhpCsFixer\Config::create()
     ->setFinder(
         PhpCsFixer\Finder::create()
             ->in(__DIR__)
-            ->exclude('.Build')
+            ->exclude('.build')
             ->exclude('Documentation')
             ->notName('ext_emconf.php')
             ->notName('ext_localconf.php')
