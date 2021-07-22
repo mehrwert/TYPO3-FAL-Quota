@@ -20,11 +20,22 @@ The following is an overview of the changes in this extension. For more details 
       Release Description
 
  - :Version:
+      1.6.0
+   :Date:
+      2021-07-22
+   :Changes:
+      * Use localization for notification emails
+      * Provide DDEV environment
+      * Ensure TYPO3 10 compatibility of DatamapDataHandlerHook
+      * Provide signal to extend warning email recipient list
+      * Add extension-key to composer.json
+
+ - :Version:
       1.5.2
    :Date:
       2021-01-15
    :Changes:
-      Add missing Slot postFolderRename()
+      Resolve a logical flaw in email notification in QuotaCommand::checkThreshold()
 
  - :Version:
       1.5.1
