@@ -15,7 +15,7 @@ return [
     'fal_quota:quota:notify' => [
         'class' => NotifyCommand::class,
     ],
-    'fal_quota:quota:update' => [
+    'fal_quota:usage:update' => [
         'class' => UpdateCommand::class,
     ],
 ];

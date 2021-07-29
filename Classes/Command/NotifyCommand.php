@@ -11,17 +11,15 @@ namespace Mehrwert\FalQuota\Command;
 
 use Mehrwert\FalQuota\Utility\QuotaUtility;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Send quota notification
@@ -32,11 +30,6 @@ use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
  */
 final class NotifyCommand extends Command
 {
-    /**
-     * @var ConnectionPool
-     */
-    private $connectionPool;
-
     /**
      * @var QuotaUtility
      */
@@ -55,7 +48,6 @@ final class NotifyCommand extends Command
      */
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
         $this->quotaUtility = GeneralUtility::makeInstance(QuotaUtility::class);
     }
 
@@ -105,8 +97,8 @@ final class NotifyCommand extends Command
      * Send the over-quota-notification to all configured recipients
      *
      * @param ResourceStorage $storage
-     * @param array $quotaConfiguration
-     * @param int $currentThreshold
+     * @param array           $quotaConfiguration
+     * @param int             $currentThreshold
      * @return int
      */
     private function sendNotification(ResourceStorage $storage, array $quotaConfiguration, int $currentThreshold): int
