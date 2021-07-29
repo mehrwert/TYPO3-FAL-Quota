@@ -40,7 +40,7 @@ final class QuotaUtility
      * @param int $storageId
      * @return array
      */
-    public function getStorageDetails($storageId): array
+    public function getStorageDetails(int $storageId): array
     {
         $storage = GeneralUtility::makeInstance(StorageRepository::class)->findByUid($storageId);
 
@@ -86,7 +86,7 @@ final class QuotaUtility
      * @param int $storageId
      * @return int
      */
-    public function getTotalDiskSpaceUsedInStorage($storageId): int
+    public function getTotalDiskSpaceUsedInStorage(int $storageId): int
     {
         $storage = $this->getStorage($storageId);
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file');
@@ -109,7 +109,7 @@ final class QuotaUtility
      * @param int $storageId
      * @return int Current usage in MB
      */
-    public function updateStorageUsage($storageId): int
+    public function updateStorageUsage(int $storageId): int
     {
         $currentUsage = $this->getTotalDiskSpaceUsedInStorage($storageId);
         $connection = $this->connectionPool->getConnectionForTable('sys_file_storage');
@@ -130,7 +130,7 @@ final class QuotaUtility
      * @param int $breakAt
      * @return int
      */
-    public function getFolderSize(Folder $folder, $breakAt = 0): int
+    public function getFolderSize(Folder $folder, int $breakAt = 0): int
     {
         $folderSize = 0;
         foreach ($folder->getFiles(0, 0, 1, true) as $file) {
@@ -181,7 +181,7 @@ final class QuotaUtility
      * @param bool $addUnit
      * @return string
      */
-    public static function numberFormat(int $number, $unit = '', $addUnit = true): string
+    public static function numberFormat(int $number, string $unit = '', bool $addUnit = true): string
     {
         switch ($unit) {
             case 'kB':
@@ -222,7 +222,7 @@ final class QuotaUtility
      * @param int $storageId
      * @return ResourceStorage
      */
-    private function getStorage($storageId): ResourceStorage
+    private function getStorage(int $storageId): ResourceStorage
     {
         return GeneralUtility::makeInstance(StorageRepository::class)->findByUid($storageId);
     }
