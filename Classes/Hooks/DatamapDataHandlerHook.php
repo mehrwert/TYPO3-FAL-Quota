@@ -112,6 +112,7 @@ class DatamapDataHandlerHook
         } else {
             $languageService = GeneralUtility::makeInstance(LanguageService::class);
         }
+
         return $languageService;
     }
 }

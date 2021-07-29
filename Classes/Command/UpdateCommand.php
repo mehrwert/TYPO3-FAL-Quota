@@ -15,7 +15,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * Use like this:
  *
- * ./htdocs/typo3/sysext/core/bin/typo3 fal_quota:quota:update
+ * ./htdocs/typo3/sysext/core/bin/typo3 fal_quota:usage:update
  */
 final class UpdateCommand extends Command
 {
