@@ -8,10 +8,14 @@ declare(strict_types=1);
  * file 'LICENSE.md', which is part of this source code package.
  */
 
-use Mehrwert\FalQuota\Command\QuotaCommand;
+use Mehrwert\FalQuota\Command\NotifyCommand;
+use Mehrwert\FalQuota\Command\UpdateCommand;
 
 return [
+    'fal_quota:quota:notify' => [
+        'class' => NotifyCommand::class,
+    ],
     'fal_quota:quota:update' => [
-        'class' => QuotaCommand::class,
+        'class' => UpdateCommand::class,
     ],
 ];

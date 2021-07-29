@@ -24,13 +24,13 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 /**
- * Quota notification and update class
+ * Send quota notification
  *
  * Use like this:
  *
- * ./htdocs/typo3/sysext/core/bin/typo3 fal_quota:quota:update
+ * ./htdocs/typo3/sysext/core/bin/typo3 fal_quota:quota:notify
  */
-final class QuotaCommand extends Command
+final class NotifyCommand extends Command
 {
     /**
      * @var ConnectionPool
@@ -47,13 +47,7 @@ final class QuotaCommand extends Command
      */
     protected function configure(): void
     {
-        $this
-            ->setDescription('Update Quota Statistics for storages')
-            ->addArgument(
-                'storage-id',
-                InputArgument::OPTIONAL,
-                'Id of single storage to update.'
-            );
+        $this->setDescription('Send notification emails');
     }
 
     /**
@@ -70,16 +64,10 @@ final class QuotaCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
-        $storageId = (int)$input->getArgument('storage-id');
-        if ($storageId > 0) {
-            $storages = $storageRepository->findByUid($storageId);
-        } else {
-            $storages = $storageRepository->findAll();
-        }
+        $storages = GeneralUtility::makeInstance(StorageRepository::class)->findAll();
         if (!empty($storages)) {
             foreach ($storages as $storage) {
-                $currentUsage = $this->quotaUtility->updateStorageUsage($storage->getUid());
+                $currentUsage = $this->quotaUtility->getTotalDiskSpaceUsedInStorage($storage->getUid());
                 $this->checkThreshold($storage, $currentUsage);
             }
         }
