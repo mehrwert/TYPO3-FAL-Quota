@@ -20,6 +20,14 @@ The following is an overview of the changes in this extension. For more details 
       Release Description
 
  - :Version:
+      1.7.0
+   :Date:
+      2021-08-09
+   :Changes:
+      * [!!!] Split workflows and provide an additional task for statistics update and notification. You may use the migrator to update all existing tasks `./vendor/bin/typo3 upgrade:run falQuota_commandIdentifierUpdate`
+      * Update documentation
+
+ - :Version:
       1.6.0
    :Date:
       2021-07-22

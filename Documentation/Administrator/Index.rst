@@ -35,7 +35,19 @@ a red background if the quota limit has been reached/exceeded.
 .. tip::
 
    Quotas may exceed their soft quota limit (100%) if files are added to the storage by S/FTP or directly in the file
-   system. The scheduler task may then be used to regularly update quota statistics and send the email notifications.
+   system. The scheduler task may then be used to regularly update quota statistics.
+
+Scheduler Tasks for FAL Quota
+=============================
+
+As of 1.7.0 workflows for statictics update and email notification have been split in two tasks. Since 1.7.0 it is
+possible to perform frequent updates of usage statictis and send notifications only once in a while.
+
+.. figure:: ../Images/SchedulerTasks.png
+   :class: with-shadow
+   :alt: FAL Quota scheduler tasks
+
+   Example of FAL Quota scheduler tasks
 
 Scheduler Task to update Quota Statistics
 =========================================
@@ -46,7 +58,7 @@ Choose :guilabel:`Execute console commands` from the Class list [1]. Click on th
 :guilabel:`Schedulable Command. Save and reopen to define command arguments` and select the
 Symfony command :guilabel:`fal_quota:quota:update: Update Quota Statistics for storages` from the list [2].
 
-.. figure:: ../Images/SchedulerTask.png
+.. figure:: ../Images/SchedulerTaskStatistics.png
    :class: with-shadow
    :alt: Scheduler Task for Quota settings
 
@@ -55,8 +67,8 @@ Symfony command :guilabel:`fal_quota:quota:update: Update Quota Statistics for s
 .. tip::
 
    Quota statistics of a storage is automatically updated with every action executed within the storage,
-   the Scheduler task is mainly used to send notifications and sync external updates of the storage
-   assets (e.g. files added by S/FTP). Set the execution interval according to your requirements.
+   the Scheduler tasks can be used to sync external updates of the storage assets (e.g.
+   files added by S/FTP). Set the execution interval according to your requirements.
 
 Manually update Quota Statistics
 ================================
@@ -73,8 +85,8 @@ You can optionally specify the UID of a storage to update a single storage recor
 
    ./public/typo3/sysext/core/bin/typo3 fal_quota:quota:update 1
 
-Email Notifications
-===================
+Scheduler Task for Email Notifications
+======================================
 
 The email notifications is currently very basic and just sends an informal mail about the storage reaching quota limits.
 
@@ -83,3 +95,11 @@ The email notifications is currently very basic and just sends an informal mail 
    :alt: Example quota warning mails
 
    Example quota warning mails
+
+The scheduler task for notifications can be configured in cron style (in this example (`0 10 * * */5`): Every friday at 10 a.m.).
+
+.. figure:: ../Images/SchedulerTaskNotification.png
+   :class: with-shadow
+   :alt: Example quota warning scheduler task
+
+   Example quota warning scheduler task
