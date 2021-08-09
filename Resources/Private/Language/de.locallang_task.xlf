@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2021-08-09T20:00:00Z">
+        <header/>
+        <body>
+            <trans-unit id="notify.command.description">
+                <target>Benachrichtigungs-E-Mails senden (Empfänger müssen jeweils im Dateispeicher eingetragen werden)</target>
+            </trans-unit>
+
+            <trans-unit id="update.command.description">
+                <target>Statistik der Speicherauslastung aktualisieren</target>
+            </trans-unit>
+            <trans-unit id="update.command.storageUid.description">
+                <target>UID des Dateispeichers.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

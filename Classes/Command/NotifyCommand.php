@@ -40,7 +40,9 @@ final class NotifyCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setDescription('Send notification emails');
+        $this->setDescription(
+            LocalizationUtility::translate('LLL:EXT:fal_quota/Resources/Private/Language/locallang_task.xlf:notify.command.description')
+        );
     }
 
     /**

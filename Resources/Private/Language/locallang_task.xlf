@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2021-08-09T20:00:00Z">
+        <header/>
+        <body>
+            <trans-unit id="notify.command.description">
+                <source>Send notification emails (recipients are defined in the Storage)</source>
+            </trans-unit>
+
+            <trans-unit id="update.command.description">
+                <source>Update storage usage statistics</source>
+            </trans-unit>
+            <trans-unit id="update.command.storageUid.description">
+                <source>UID of single storage to update.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

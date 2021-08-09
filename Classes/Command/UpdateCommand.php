@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Update storage usage statistics
@@ -30,11 +31,13 @@ final class UpdateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Update storage usage statistics')
+            ->setDescription(
+                LocalizationUtility::translate('LLL:EXT:fal_quota/Resources/Private/Language/locallang_task.xlf:update.command.description')
+            )
             ->addArgument(
                 'storage-id',
                 InputArgument::OPTIONAL,
-                'Id of single storage to update.'
+                LocalizationUtility::translate('LLL:EXT:fal_quota/Resources/Private/Language/locallang_task.xlf:update.command.storageUid.description')
             );
     }
 
