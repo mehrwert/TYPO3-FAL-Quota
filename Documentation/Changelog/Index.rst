@@ -18,6 +18,12 @@ The following is an overview of the changes in this extension. For more details 
       Release Date
    :Changes:
       Release Description
+ - :Version:
+      1.7.1
+   :Date:
+      2021-08-24
+   :Changes:
+      * Bump PHP version constraint to allow PHP 7.4
 
  - :Version:
       1.7.0
