@@ -193,12 +193,15 @@ final class NotifyCommand extends Command
      * @return bool
      * @since 1.1.0
      */
-    private function sendNotificationWithSymfonyMail($subject, $senderEmailAddress, $senderEmailName, $body, $recipients): bool
-    {
+    private function sendNotificationWithSymfonyMail(
+        string $subject,
+        string $senderEmailAddress,
+        string $senderEmailName,
+        string $body,
+        array $recipients
+    ): bool {
         $mailMessage = GeneralUtility::makeInstance(MailMessage::class);
-        foreach ($recipients as $recipient) {
-            $mailMessage->to($recipient);
-        }
+        $mailMessage->setTo($recipients);
 
         return $mailMessage
             ->subject($subject)
