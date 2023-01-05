@@ -14,7 +14,7 @@ call_user_func(
                 'falquota',
                 'bottom',
                 [
-                    'Dashboard' => 'index',
+                    \Mehrwert\FalQuota\Controller\DashboardController::class => 'index',
                 ],
                 [
                     'access' => 'user,group',
