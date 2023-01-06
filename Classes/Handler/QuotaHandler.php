@@ -1,76 +1,65 @@
 <?php
-declare(strict_types=1);
-namespace Mehrwert\FalQuota\Slot;
-
-/*
- * 2019 - EXT:fal_quota - Configuration fields for Quota
- *
- * This file is subject to the terms and conditions defined in
- * file 'LICENSE.md', which is part of this source code package.
- */
+namespace Mehrwert\FalQuota\Handler;
 
 use InvalidArgumentException;
-use Mehrwert\FalQuota\Utility\QuotaUtility;
+use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
+use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Resource\FolderInterface;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Exception;
-use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use Mehrwert\FalQuota\Slot\ResourceStorageException;
+use Mehrwert\FalQuota\Utility\QuotaUtility;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
-use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
-use TYPO3\CMS\Core\Resource\File;
-use TYPO3\CMS\Core\Resource\FileInterface;
-use TYPO3\CMS\Core\Resource\Folder;
-use TYPO3\CMS\Core\Resource\FolderInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\Localization\LanguageService;
 
-/**
- * Class ResourceStorageSlot for Signal/Slots in file list and FAL handling
- */
-abstract class AbstractResourceStorageSlot
+class QuotaHandler
 {
     /**
      * Configured soft quota for the current storage
      * @var float
      */
     private $softQuota;
-
+    
     /**
      * Current usage of the current storage
      * @var float
      */
     private $currentUsage;
-
+    
     /**
      * Update the storage quota usage where the file resides in
      *
      * @param FileInterface $file
      */
-    protected function updateQuotaByFile(FileInterface $file): void
+    public function updateQuotaByFile(FileInterface $file): void
     {
         try {
             $this->updateQuotaByFolder(
                 $file->getStorage()->getFolder(
                     $file->getStorage()->getFolderIdentifierFromFileIdentifier(
                         $file->getIdentifier()
+                        )
                     )
-                )
-            );
+                );
         } catch (InsufficientFolderAccessPermissionsException | \Exception $e) {
             // Just catch the exception
         }
     }
-
+    
     /**
      * Update the storage quota usage
      *
      * @param Folder $folder
      */
-    protected function updateQuotaByFolder(Folder $folder): void
+    public function updateQuotaByFolder(Folder $folder): void
     {
         GeneralUtility::makeInstance(QuotaUtility::class)->updateStorageUsage($folder->getStorage()->getUid());
     }
-
+    
     /**
      * General quota check using the values in the storage
      *
@@ -79,7 +68,7 @@ abstract class AbstractResourceStorageSlot
      * @param string $action
      * @param string $file
      */
-    protected function checkQuota(FolderInterface $targetFolder, $code, $action = '', $file = ''): void
+    public function checkQuota(FolderInterface $targetFolder, $code, $action = '', $file = ''): void
     {
         if ($this->isOverQuota($targetFolder->getStorage()->getUid()) === true) {
             $message = $this->getLocalizedMessage('over_quota', [$this->currentUsage, $this->softQuota]);
@@ -87,7 +76,7 @@ abstract class AbstractResourceStorageSlot
             throw new ResourceStorageException($message, $code);
         }
     }
-
+    
     /**
      * Estimate the result size of the copy folder command
      *
@@ -95,7 +84,7 @@ abstract class AbstractResourceStorageSlot
      * @param Folder $targetFolder
      * @param int $code
      */
-    protected function preEstimateUsageAfterCopyFolderCommand(Folder $folder, Folder $targetFolder, $code): void
+    public function preEstimateUsageAfterCopyFolderCommand(Folder $folder, Folder $targetFolder, $code): void
     {
         $quotaUtility = GeneralUtility::makeInstance(QuotaUtility::class);
         $storageDetails = $quotaUtility->getStorageDetails($targetFolder->getStorage()->getUid());
@@ -108,13 +97,13 @@ abstract class AbstractResourceStorageSlot
                     [
                         $storageDetails['soft_quota'],
                     ]
-                );
+                    );
                 $this->addMessageToFlashMessageQueue($message);
                 throw new ResourceStorageException($message, $code);
             }
         }
     }
-
+    
     /**
      * Estimate the file size with the new content
      *
@@ -122,7 +111,7 @@ abstract class AbstractResourceStorageSlot
      * @param mixed $content
      * @param int $code
      */
-    protected function preEstimateUsageAfterSetContentCommand(FileInterface $file, $content, $code): void
+    public function preEstimateUsageAfterSetContentCommand(FileInterface $file, $content, $code): void
     {
         $contentSize = strlen($content);
         $storageDetails = GeneralUtility::makeInstance(QuotaUtility::class)->getStorageDetails($file->getStorage()->getUid());
@@ -138,13 +127,13 @@ abstract class AbstractResourceStorageSlot
                         number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
                         $storageDetails['soft_quota'],
                     ]
-                );
+                    );
                 $this->addMessageToFlashMessageQueue($message);
                 throw new ResourceStorageException($message, $code);
             }
         }
     }
-
+    
     /**
      * Estimate the storage utilization after the file has been copied
      *
@@ -152,7 +141,7 @@ abstract class AbstractResourceStorageSlot
      * @param Folder $targetFolder
      * @param int $code
      */
-    protected function preEstimateUsageAfterCopyCommand(FileInterface $file, Folder $targetFolder, $code): void
+    public function preEstimateUsageAfterCopyCommand(FileInterface $file, Folder $targetFolder, $code): void
     {
         $copiedFileSize = $file->getSize();
         $storageDetails = GeneralUtility::makeInstance(QuotaUtility::class)->getStorageDetails($targetFolder->getStorage()->getUid());
@@ -168,13 +157,13 @@ abstract class AbstractResourceStorageSlot
                         number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
                         $storageDetails['soft_quota'],
                     ]
-                );
+                    );
                 $this->addMessageToFlashMessageQueue($message);
                 throw new ResourceStorageException($message, $code);
             }
         }
     }
-
+    
     /**
      * Estimate the utilization of the the target storage after the file would have been moved
      *
@@ -182,7 +171,7 @@ abstract class AbstractResourceStorageSlot
      * @param Folder $targetFolder
      * @param int $code
      */
-    protected function preEstimateUsageAfterMoveCommand(FileInterface $file, Folder $targetFolder, $code): void
+    public function preEstimateUsageAfterMoveCommand(FileInterface $file, Folder $targetFolder, $code): void
     {
         // Use MB as unit for all numeric operations
         $movedFileSize = $file->getSize();
@@ -199,13 +188,13 @@ abstract class AbstractResourceStorageSlot
                         number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
                         $storageDetails['soft_quota'],
                     ]
-                );
+                    );
                 $this->addMessageToFlashMessageQueue($message);
                 throw new ResourceStorageException($message, $code);
             }
         }
     }
-
+    
     /**
      * Estimate the utilization after the file would have been replaced with a smaller/bigger file
      *
@@ -213,7 +202,7 @@ abstract class AbstractResourceStorageSlot
      * @param string $localFilePath
      * @param int $code
      */
-    protected function preEstimateUsageAfterReplaceCommand(FileInterface $file, $localFilePath, $code): void
+    public function preEstimateUsageAfterReplaceCommand(FileInterface $file, $localFilePath, $code): void
     {
         if (is_file($localFilePath)) {
             $newFileSize = filesize($localFilePath);
@@ -231,14 +220,14 @@ abstract class AbstractResourceStorageSlot
                             number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
                             $storageDetails['soft_quota'],
                         ]
-                    );
+                        );
                     $this->addMessageToFlashMessageQueue($message);
                     throw new ResourceStorageException($message, $code);
                 }
             }
         }
     }
-
+    
     /**
      * Check if storage is over quota
      *
@@ -250,10 +239,10 @@ abstract class AbstractResourceStorageSlot
         $storageDetails = GeneralUtility::makeInstance(QuotaUtility::class)->getStorageDetails($storageId);
         $this->softQuota = $storageDetails['soft_quota'];
         $this->currentUsage = $storageDetails['current_usage'];
-
+        
         return $storageDetails['over_quota'];
     }
-
+    
     /**
      * Get a localized message for quota warnings
      *
@@ -264,10 +253,10 @@ abstract class AbstractResourceStorageSlot
     protected function getLocalizedMessage($localizationKey, array $replaceMarkers = []): string
     {
         $label = $this->getLanguageService()->sL('LLL:EXT:fal_quota/Resources/Private/Language/locallang_resource_storage_messages.xlf:' . $localizationKey);
-
+        
         return vsprintf($label, $replaceMarkers);
     }
-
+    
     /**
      * Adds a localized FlashMessage to the message queue
      *
@@ -286,14 +275,14 @@ abstract class AbstractResourceStorageSlot
             '',
             $severity,
             true
-        );
+            );
         try {
             $this->addFlashMessage($flashMessage);
         } catch (Exception $e) {
             // Just catch the exception
         }
     }
-
+    
     /**
      * Add flash message to message queue
      *
@@ -304,12 +293,12 @@ abstract class AbstractResourceStorageSlot
     {
         /** @var FlashMessageService $flashMessageService */
         $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-
+        
         /** @var FlashMessageQueue $defaultFlashMessageQueue */
         $defaultFlashMessageQueue = $flashMessageService->getMessageQueueByIdentifier();
         $defaultFlashMessageQueue->enqueue($flashMessage);
     }
-
+    
     /**
      * Returns LanguageService
      *
