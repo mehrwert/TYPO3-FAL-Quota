@@ -1,0 +1,103 @@
+---
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFileAdded:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFileAdded'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileAddedEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFileContentSet:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFileContentSet'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileContentSetEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFileCopied:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFileCopied'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFiledCopiedEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFileCreated:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFileCreated'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileCreatedEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFileDeleted:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFileDeleted'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileDeletedEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFileMoved:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFileMoved'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileMovedEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFileRenamed:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFileRenamed'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileRenamedEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFileReplaced:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFileReplaced'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileReplacedEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFolderCopied:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFolderCopied'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderCopiedEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFolderDeleted:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFolderDeleted'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderDeletedEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFolderMoved:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFolderMoved'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderMovedEvent
+  Mehrwert\FalQuota\EventListener\SetQuotaAfterFolderRenamed:
+    tags:
+      - name: event.listener
+        identifier: 'SetQuotaAfterFolderRenamed'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderRenamed
+
+  Mehrwert\FalQuota\EventListener\CheckQuotaBeforeFileAdded:
+    tags:
+      - name: event.listener
+        identifier: 'CheckQuotaBeforeFileAdded'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFileAddedEvent
+  Mehrwert\FalQuota\EventListener\CheckQuotaBeforeFileContentSet:
+    tags:
+      - name: event.listener
+        identifier: 'CheckQuotaBeforeFileContentSet'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFileContentSetEvent
+  Mehrwert\FalQuota\EventListener\CheckQuotaBeforeFileCopied:
+    tags:
+      - name: event.listener
+        identifier: 'CheckQuotaBeforeFileCopied'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFiledCopiedEvent
+  Mehrwert\FalQuota\EventListener\CheckQuotaBeforeFileCreated:
+    tags:
+      - name: event.listener
+        identifier: 'CheckQuotaBeforeFileCreated'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFileCreatedEvent
+  Mehrwert\FalQuota\EventListener\CheckQuotaBeforeFileMoved:
+    tags:
+      - name: event.listener
+        identifier: 'CheckQuotaBeforeFileMoved'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFileMovedEvent
+  Mehrwert\FalQuota\EventListener\CheckQuotaBeforeFileReplaced:
+    tags:
+      - name: event.listener
+        identifier: 'CheckQuotaBeforeFileReplaced'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFileReplacedEvent
+  Mehrwert\FalQuota\EventListener\CheckQuotaBeforeFolderCopied:
+    tags:
+      - name: event.listener
+        identifier: 'CheckQuotaBeforeFolderCopied'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFolderCopiedEvent
