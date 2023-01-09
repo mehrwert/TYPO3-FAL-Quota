@@ -23,6 +23,7 @@ class SetQuotaAfterFileMoved
         /** @var QuotaHandler $handler */
         $handler = GeneralUtility::makeInstance(QuotaHandler::class);
         $handler->updateQuotaByFolder($event->getFolder());
+        $handler->updateQuotaByFolder($event->getOriginalFolder()->getParentFolder());
     }
 }
 
