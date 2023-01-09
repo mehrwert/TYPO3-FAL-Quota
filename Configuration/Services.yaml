@@ -14,12 +14,12 @@ services:
     tags:
       - name: event.listener
         identifier: 'SetQuotaAfterFileContentSet'
-        event: TYPO3\CMS\Core\Resource\Event\AfterFileContentSetEvent
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileContentsSetEvent
   Mehrwert\FalQuota\EventListener\SetQuotaAfterFileCopied:
     tags:
       - name: event.listener
         identifier: 'SetQuotaAfterFileCopied'
-        event: TYPO3\CMS\Core\Resource\Event\AfterFiledCopiedEvent
+        event: TYPO3\CMS\Core\Resource\Event\AfterFileCopiedEvent
   Mehrwert\FalQuota\EventListener\SetQuotaAfterFileCreated:
     tags:
       - name: event.listener
@@ -64,7 +64,7 @@ services:
     tags:
       - name: event.listener
         identifier: 'SetQuotaAfterFolderRenamed'
-        event: TYPO3\CMS\Core\Resource\Event\AfterFolderRenamed
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderRenamedEvent
 
   Mehrwert\FalQuota\EventListener\CheckQuotaBeforeFileAdded:
     tags:
