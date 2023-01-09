@@ -22,7 +22,7 @@ class CheckQuotaBeforeFolderCopied
     {
         /** @var QuotaHandler $handler */
         $handler = GeneralUtility::makeInstance(QuotaHandler::class);
-        $handler->preEstimateUsageAfterCopyFolderCommand($event->getFolder(), $event->getTargetFolderName(), 1576872006);
+        $handler->preEstimateUsageAfterCopyFolderCommand($event->getFolder(), $event->getTargetParentFolder(), 1576872006);
     }
 }
 

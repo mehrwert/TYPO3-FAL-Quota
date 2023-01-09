@@ -91,7 +91,8 @@ class QuotaHandler
         // Check if quota has been set
         if ($storageDetails['soft_quota_raw'] > 0) {
             $folderSize = $quotaUtility->getFolderSize($folder, $storageDetails['current_usage_raw']);
-            if ($folderSize > $storageDetails['current_usage_raw']) {
+            $estimateUsage = $storageDetails['current_usage_raw'] + $folderSize;
+            if ($estimateUsage > $storageDetails['soft_quota_raw']) {
                 $message = $this->getLocalizedMessage(
                     'copy_folder_result_will_exceed_quota',
                     [
