@@ -80,7 +80,7 @@ services:
     tags:
       - name: event.listener
         identifier: 'CheckQuotaBeforeFileCopied'
-        event: TYPO3\CMS\Core\Resource\Event\BeforeFiledCopiedEvent
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFileCopiedEvent
   Mehrwert\FalQuota\EventListener\CheckQuotaBeforeFileCreated:
     tags:
       - name: event.listener
