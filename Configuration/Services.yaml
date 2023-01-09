@@ -75,7 +75,7 @@ services:
     tags:
       - name: event.listener
         identifier: 'CheckQuotaBeforeFileContentSet'
-        event: TYPO3\CMS\Core\Resource\Event\BeforeFileContentSetEvent
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFileContentsSetEvent
   Mehrwert\FalQuota\EventListener\CheckQuotaBeforeFileCopied:
     tags:
       - name: event.listener
