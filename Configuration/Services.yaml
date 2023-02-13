@@ -5,6 +5,21 @@ services:
     autoconfigure: true
     public: false
 
+  Mehrwert\FalQuota\Command\NotifyCommand:
+    tags:
+      - name: 'console.command'
+        command: 'falquota:notifycommand'
+        description: 'notify users for quota'
+        hidden: false
+        schedulable: true
+  Mehrwert\FalQuota\Command\UpdateCommand:
+    tags:
+      - name: 'console.command'
+        command: 'falquota:updatequota'
+        description: 'update quota'
+        hidden: false
+        schedulable: true
+
   Mehrwert\FalQuota\EventListener\SetQuotaAfterFileAdded:
     tags:
       - name: event.listener
