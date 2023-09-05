@@ -1,22 +1,22 @@
 name: fal-quota
 type: typo3
 docroot: .build/web
-php_version: "7.2"
+php_version: "7.4"
 webserver_type: apache-fpm
 router_http_port: "80"
 router_https_port: "443"
 xdebug_enabled: false
-additional_hostnames: []
-additional_fqdns: []
+additional_hostnames: [ ]
+additional_fqdns: [ ]
 database:
-    type: mysql
-    version: "5.7"
+  type: mysql
+  version: "5.7"
 hooks:
-    post-start:
-        - exec: composer install -d /var/www/html
+  post-start:
+    - exec: composer install -d /var/www/html
 use_dns_when_possible: true
 composer_version: "2"
-web_environment: []
+web_environment: [ ]
 nodejs_version: "18"
 upload_dirs:
   [
