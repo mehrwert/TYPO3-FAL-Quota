@@ -25,4 +25,3 @@ class SetQuotaAfterFolderDeleted
         $handler->updateQuotaByFolder($event->getFolder());
     }
 }
-

@@ -1,20 +1,21 @@
 <?php
+declare(strict_types=1);
 namespace Mehrwert\FalQuota\Handler;
 
 use InvalidArgumentException;
-use TYPO3\CMS\Core\Resource\FileInterface;
-use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
-use TYPO3\CMS\Core\Resource\Folder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Resource\FolderInterface;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Exception;
 use Mehrwert\FalQuota\Slot\ResourceStorageException;
 use Mehrwert\FalQuota\Utility\QuotaUtility;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
-use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
+use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\FolderInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class QuotaHandler
 {
@@ -23,13 +24,13 @@ class QuotaHandler
      * @var float
      */
     private $softQuota;
-    
+
     /**
      * Current usage of the current storage
      * @var float
      */
     private $currentUsage;
-    
+
     /**
      * Update the storage quota usage where the file resides in
      *
@@ -42,14 +43,14 @@ class QuotaHandler
                 $file->getStorage()->getFolder(
                     $file->getStorage()->getFolderIdentifierFromFileIdentifier(
                         $file->getIdentifier()
-                        )
                     )
-                );
+                )
+            );
         } catch (InsufficientFolderAccessPermissionsException | \Exception $e) {
             // Just catch the exception
         }
     }
-    
+
     /**
      * Update the storage quota usage
      *
@@ -59,7 +60,7 @@ class QuotaHandler
     {
         GeneralUtility::makeInstance(QuotaUtility::class)->updateStorageUsage($folder->getStorage()->getUid());
     }
-    
+
     /**
      * General quota check using the values in the storage
      *
@@ -76,7 +77,7 @@ class QuotaHandler
             throw new ResourceStorageException($message, $code);
         }
     }
-    
+
     /**
      * Estimate the result size of the copy folder command
      *
@@ -98,13 +99,13 @@ class QuotaHandler
                     [
                         $storageDetails['soft_quota'],
                     ]
-                    );
+                );
                 $this->addMessageToFlashMessageQueue($message);
                 throw new ResourceStorageException($message, $code);
             }
         }
     }
-    
+
     /**
      * Estimate the file size with the new content
      *
@@ -128,13 +129,13 @@ class QuotaHandler
                         number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
                         $storageDetails['soft_quota'],
                     ]
-                    );
+                );
                 $this->addMessageToFlashMessageQueue($message);
                 throw new ResourceStorageException($message, $code);
             }
         }
     }
-    
+
     /**
      * Estimate the storage utilization after the file has been copied
      *
@@ -158,13 +159,13 @@ class QuotaHandler
                         number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
                         $storageDetails['soft_quota'],
                     ]
-                    );
+                );
                 $this->addMessageToFlashMessageQueue($message);
                 throw new ResourceStorageException($message, $code);
             }
         }
     }
-    
+
     /**
      * Estimate the utilization of the the target storage after the file would have been moved
      *
@@ -189,13 +190,13 @@ class QuotaHandler
                         number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
                         $storageDetails['soft_quota'],
                     ]
-                    );
+                );
                 $this->addMessageToFlashMessageQueue($message);
                 throw new ResourceStorageException($message, $code);
             }
         }
     }
-    
+
     /**
      * Estimate the utilization after the file would have been replaced with a smaller/bigger file
      *
@@ -221,14 +222,14 @@ class QuotaHandler
                             number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
                             $storageDetails['soft_quota'],
                         ]
-                        );
+                    );
                     $this->addMessageToFlashMessageQueue($message);
                     throw new ResourceStorageException($message, $code);
                 }
             }
         }
     }
-    
+
     /**
      * Check if storage is over quota
      *
@@ -240,10 +241,10 @@ class QuotaHandler
         $storageDetails = GeneralUtility::makeInstance(QuotaUtility::class)->getStorageDetails($storageId);
         $this->softQuota = $storageDetails['soft_quota'];
         $this->currentUsage = $storageDetails['current_usage'];
-        
+
         return $storageDetails['over_quota'];
     }
-    
+
     /**
      * Get a localized message for quota warnings
      *
@@ -254,10 +255,10 @@ class QuotaHandler
     protected function getLocalizedMessage($localizationKey, array $replaceMarkers = []): string
     {
         $label = $this->getLanguageService()->sL('LLL:EXT:fal_quota/Resources/Private/Language/locallang_resource_storage_messages.xlf:' . $localizationKey);
-        
+
         return vsprintf($label, $replaceMarkers);
     }
-    
+
     /**
      * Adds a localized FlashMessage to the message queue
      *
@@ -276,14 +277,14 @@ class QuotaHandler
             '',
             $severity,
             true
-            );
+        );
         try {
             $this->addFlashMessage($flashMessage);
         } catch (Exception $e) {
             // Just catch the exception
         }
     }
-    
+
     /**
      * Add flash message to message queue
      *
@@ -294,12 +295,12 @@ class QuotaHandler
     {
         /** @var FlashMessageService $flashMessageService */
         $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-        
+
         /** @var FlashMessageQueue $defaultFlashMessageQueue */
         $defaultFlashMessageQueue = $flashMessageService->getMessageQueueByIdentifier();
         $defaultFlashMessageQueue->enqueue($flashMessage);
     }
-    
+
     /**
      * Returns LanguageService
      *

@@ -25,4 +25,3 @@ class SetQuotaAfterFileCreated
         $handler->updateQuotaByFolder($event->getFolder());
     }
 }
-

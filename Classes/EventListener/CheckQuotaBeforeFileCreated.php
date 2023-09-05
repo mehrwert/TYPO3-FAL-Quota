@@ -25,4 +25,3 @@ class CheckQuotaBeforeFileCreated
         $handler->checkQuota($event->getFolder(), 1576872000);
     }
 }
-

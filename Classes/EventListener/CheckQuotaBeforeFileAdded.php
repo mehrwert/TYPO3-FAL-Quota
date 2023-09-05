@@ -9,9 +9,9 @@ namespace Mehrwert\FalQuota\EventListener;
  * file 'LICENSE.md', which is part of this source code package.
  */
 
+use Mehrwert\FalQuota\Handler\QuotaHandler;
 use TYPO3\CMS\Core\Resource\Event\BeforeFileAddedEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Mehrwert\FalQuota\Handler\QuotaHandler;
 
 /**
  * Check that the quota after the file is added is not exceeded
@@ -25,4 +25,3 @@ class CheckQuotaBeforeFileAdded
         $handler->checkQuota($event->getTargetFolder(), 1576872000);
     }
 }
-

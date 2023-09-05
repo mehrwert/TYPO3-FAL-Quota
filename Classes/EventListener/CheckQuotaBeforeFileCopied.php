@@ -25,4 +25,3 @@ class CheckQuotaBeforeFileCopied
         $handler->preEstimateUsageAfterCopyCommand($event->getFile(), $event->getFolder(), 1576872002);
     }
 }
-

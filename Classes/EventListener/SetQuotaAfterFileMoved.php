@@ -26,4 +26,3 @@ class SetQuotaAfterFileMoved
         $handler->updateQuotaByFolder($event->getOriginalFolder()->getParentFolder());
     }
 }
-

@@ -26,4 +26,3 @@ class SetQuotaAfterFolderMoved
         $handler->updateQuotaByFolder($event->getTargetFolder());
     }
 }
-
