@@ -25,4 +25,3 @@ class CheckQuotaBeforeFileMoved
         $handler->preEstimateUsageAfterMoveCommand($event->getFile(), $event->getFolder(), 1576872003);
     }
 }
-

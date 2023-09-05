@@ -25,4 +25,3 @@ class SetQuotaAfterFileRenamed
         $handler->updateQuotaByFile($event->getFile());
     }
 }
-

@@ -25,4 +25,3 @@ class CheckQuotaBeforeFolderCopied
         $handler->preEstimateUsageAfterCopyFolderCommand($event->getFolder(), $event->getTargetParentFolder(), 1576872006);
     }
 }
-

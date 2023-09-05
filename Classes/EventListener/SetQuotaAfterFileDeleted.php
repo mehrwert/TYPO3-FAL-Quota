@@ -25,4 +25,3 @@ class SetQuotaAfterFileDeleted
         $handler->updateQuotaByFile($event->getFile());
     }
 }
-

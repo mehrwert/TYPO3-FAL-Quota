@@ -25,4 +25,3 @@ class SetQuotaAfterFileCopied
         $handler->updateQuotaByFolder($event->getFolder());
     }
 }
-

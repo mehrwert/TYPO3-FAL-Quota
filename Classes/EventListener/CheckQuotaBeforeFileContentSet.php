@@ -25,4 +25,3 @@ class CheckQuotaBeforeFileContentSet
         $handler->preEstimateUsageAfterSetContentCommand($event->getFile(), $event->getContent(), 1576872005);
     }
 }
-

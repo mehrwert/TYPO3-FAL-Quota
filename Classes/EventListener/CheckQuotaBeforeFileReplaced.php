@@ -25,4 +25,3 @@ class CheckQuotaBeforeFileReplaced
         $handler->preEstimateUsageAfterReplaceCommand($event->getFile(), $event->getLocalFilePath(), 1576872004);
     }
 }
-
