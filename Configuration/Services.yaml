@@ -5,6 +5,21 @@ services:
     autoconfigure: true
     public: false
 
+  core.connectionPool:
+    class: 'TYPO3\CMS\Core\Database\ConnectionPool'
+
+  core.moduleTemplateFactory:
+    class: 'TYPO3\CMS\Backend\Template\ModuleTemplateFactory'
+
+  Mehrwert\FalQuota\Utility\QuotaUtility:
+    public: true
+    arguments:
+      $connectionPool: '@core.connectionPool'
+
+  Mehrwert\FalQuota\Controller\DashboardController:
+    arguments:
+      $moduleTemplateFactory: '@core.moduleTemplateFactory'
+
   Mehrwert\FalQuota\Command\NotifyCommand:
     tags:
       - name: 'console.command'
