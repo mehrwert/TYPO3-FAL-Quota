@@ -21,17 +21,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 final class QuotaUtility
 {
-    /**
-     * @var ConnectionPool
-     */
-    private $connectionPool;
+    private ConnectionPool $connectionPool;
 
-    /**
-     * QuotaUtility constructor.
-     */
-    public function __construct()
+    public function __construct(ConnectionPool $connectionPool)
     {
-        $this->connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        $this->connectionPool = $connectionPool;
     }
 
     /**

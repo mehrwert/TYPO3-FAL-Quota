@@ -1,100 +1,29 @@
 <?php
+
 declare(strict_types=1);
 namespace Mehrwert\FalQuota\Controller;
 
-/*
- * 2019 - EXT:fal_quota
- *
- * This file is subject to the terms and conditions defined in
- * file 'LICENSE.md', which is part of this source code package.
- */
-
 use Mehrwert\FalQuota\Utility\QuotaUtility;
-use TYPO3\CMS\Backend\Template\Components\ButtonBar;
-use TYPO3\CMS\Backend\View\BackendTemplateView;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
 class DashboardController extends ActionController
 {
-    /**
-     * FAL Quota utility class
-     *
-     * @var QuotaUtility
-     */
-    private $quotaUtility;
+    private QuotaUtility $quotaUtility;
 
-    /**
-     * Backend Template Container
-     *
-     * @var string
-     */
-    protected $defaultViewObjectName = BackendTemplateView::class;
+    private ModuleTemplateFactory $moduleTemplateFactory;
 
-    /**
-     * BackendTemplateContainer
-     *
-     * @var BackendTemplateView
-     */
-    protected $view;
-
-    /**
-     * Initialize action
-     */
-    protected function initializeAction(): void
+    public function __construct(QuotaUtility $quotaUtility, ModuleTemplateFactory $moduleTemplateFactory)
     {
-        parent::initializeAction();
-        $this->quotaUtility = GeneralUtility::makeInstance(QuotaUtility::class);
+        $this->quotaUtility = $quotaUtility;
+        $this->moduleTemplateFactory = $moduleTemplateFactory;
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function initializeView(ViewInterface $view)
-    {
-        if ($view instanceof BackendTemplateView) {
-            /** @var BackendTemplateView $view */
-            parent::initializeView($view);
-            $this->registerDocheaderButtons();
-            $this->view->getModuleTemplate()->setFlashMessageQueue($this->controllerContext->getFlashMessageQueue());
-            $view->assign(
-                'localizationFile',
-                'LLL:EXT:fal_quota/Resources/Private/Language/locallang_mod.xlf'
-            );
-        }
-    }
-
-    /**
-     * Registers the Icons into the docheader
-     */
-    protected function registerDocHeaderButtons(): void
-    {
-        /** @var ButtonBar $buttonBar */
-        $buttonBar = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar();
-        $currentRequest = $this->request;
-        $moduleName = $currentRequest->getPluginName();
-        $getVars = $this->request->getArguments();
-
-        $extensionName = $currentRequest->getControllerExtensionName();
-        if (empty($getVars)) {
-            $modulePrefix = strtolower('tx_' . $extensionName . '_' . $moduleName);
-            $getVars = ['id', 'M', $modulePrefix];
-        }
-
-        // SHORTCUT button:
-        $shortcutButton = $buttonBar->makeShortcutButton()
-            ->setModuleName($moduleName)
-            ->setGetVariables($getVars);
-        $buttonBar->addButton($shortcutButton);
-    }
-
-    /**
-     * Dashboard overview
-     */
-    public function indexAction(): void
+    public function indexAction(): ResponseInterface
     {
         // TYPO3 admin user gets all storages
         if ($this->getBackendUser()->isAdmin() === true) {
@@ -106,18 +35,31 @@ class DashboardController extends ActionController
 
         if (!empty($storages)) {
             foreach ($storages as $storage) {
-                $aggregatedStorages[$storage->getUid()] = $this->quotaUtility->getStorageDetails($storage->getUid());
+                $storageUid = $storage->getUid();
+                $aggregatedStorages[$storageUid] = $this->quotaUtility->getStorageDetails($storageUid);
             }
             asort($aggregatedStorages);
         }
         $this->view->assign('storages', $aggregatedStorages);
+        $this->view->assign(
+            'localizationFile',
+            'LLL:EXT:fal_quota/Resources/Private/Language/locallang_mod.xlf'
+        );
+
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $moduleTemplate->getDocHeaderComponent()->setMetaInformation([]);
+
+        $buttonBar = $moduleTemplate->getDocHeaderComponent()->getButtonBar();
+        $shortcutButton = $buttonBar
+            ->makeShortcutButton()
+            ->setRouteIdentifier('file_FalQuotaFalquota');
+        $buttonBar->addButton($shortcutButton);
+
+        $moduleTemplate->setContent($this->view->render());
+
+        return $this->htmlResponse($moduleTemplate->renderContent());
     }
 
-    /**
-     * Returns the current BE user.
-     *
-     * @return BackendUserAuthentication
-     */
     protected function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
