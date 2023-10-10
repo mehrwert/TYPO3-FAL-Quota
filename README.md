@@ -40,7 +40,7 @@ If you are setting up the environment for the first time, create a file named `F
 proceed with the TYPO3 installation as described in the [official documentation](https://docs.typo3.org/m/typo3/guide-installation/master/en-us/QuickInstall/TheInstallTool/Index.html#the-install-tool).
 
 ## Coding Standards
-Please run `ddev . php-cs-fixer fix` after changes in PHP files.
+Please run `ddev composer cs:fix` after changes in PHP files.
 
 ## Credits
 

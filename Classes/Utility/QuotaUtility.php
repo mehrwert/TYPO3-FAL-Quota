@@ -208,7 +208,7 @@ final class QuotaUtility
             $formattedNumber = number_format($number, 0, '', '.');
         }
 
-        return  $formattedNumber . ($addUnit ? ' ' . $unit : '');
+        return $formattedNumber . ($addUnit ? ' ' . $unit : '');
     }
 
     /**
