@@ -13,3 +13,4 @@
 *GENERATED*
 *.css.map
 *.js.map
+/.php-cs-fixer.cache

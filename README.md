@@ -39,6 +39,9 @@ To use the included DDEV local configuration, run
 If you are setting up the environment for the first time, create a file named `FIRST_INSTALL` in `.build/web/` and
 proceed with the TYPO3 installation as described in the [official documentation](https://docs.typo3.org/m/typo3/guide-installation/master/en-us/QuickInstall/TheInstallTool/Index.html#the-install-tool).
 
+## Coding Standards
+Please run `ddev . php-cs-fixer fix` after changes in PHP files.
+
 ## Credits
 
 This extension was created by [Andreas Beutel](https://github.com/abeutel) in 2019 for
