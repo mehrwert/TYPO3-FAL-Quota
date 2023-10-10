@@ -20,6 +20,16 @@ The following is an overview of the changes in this extension. For more details 
       Release Description
 
  - :Version:
+      1.8.0
+   :Date:
+      2023-10-10
+   :Changes:
+      * Compatibility with TYPO3 CMS v11.5 - GH #31 (thanks to someplace53 and tstahn for supporting this task)
+      * [!!!] Dropped support for TYPO3 v9.5
+      * Switch from signals and slots to EventDispatcher (PSR-14 Events) - thanks to someplace53
+      * Multiple bugfixes - thanks to someplace53 for reporting and fixing them
+
+ - :Version:
       1.7.2
    :Date:
       2021-09-03
