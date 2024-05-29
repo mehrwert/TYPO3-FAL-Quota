@@ -269,7 +269,7 @@ class QuotaHandler
      */
     protected function addMessageToFlashMessageQueue($message, $severity = FlashMessage::ERROR): void
     {
-        if (TYPO3_MODE !== 'BE' || Environment::isCli()) {
+        if (\TYPO3\CMS\Core\Http\ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isBackend() || Environment::isCli()) {
             return;
         }
         $flashMessage = GeneralUtility::makeInstance(

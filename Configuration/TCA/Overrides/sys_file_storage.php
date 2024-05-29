@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 
 /*
  * 2019 - EXT:fal_quota - Configuration fields for Quota

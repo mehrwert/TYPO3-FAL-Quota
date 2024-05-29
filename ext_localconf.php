@@ -1,6 +1,6 @@
 <?php
 
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 
 (static function() {
     // Register the class to be available in 'eval' of TCA

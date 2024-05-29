@@ -164,7 +164,7 @@ final class NotifyCommand extends Command
             );
 
             // v10: Use Symfony Mail compatible method
-            if (VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) >= 10000000) {
+            if (VersionNumberUtility::convertVersionNumberToInteger(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class)->getVersion()) >= 10000000) {
                 return $this->sendNotificationWithSymfonyMail($subject, $senderEmailAddress, $senderEmailName, $body, $validRecipientAddresses) ? 1 : 0;
             }
             // v9: Use SwiftMailer
@@ -176,7 +176,7 @@ final class NotifyCommand extends Command
             return $mailMessage
                 ->setSubject($subject)
                 ->addFrom($senderEmailAddress, $senderEmailName)
-                ->setBody($body)
+                ->text($body)
                 ->send();
         }
 
