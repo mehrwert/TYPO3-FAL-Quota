@@ -20,6 +20,14 @@ The following is an overview of the changes in this extension. For more details 
       Release Description
 
  - :Version:
+      1.9.0
+   :Date:
+      2024-05-29
+   :Changes:
+      * Bump PHP version constraint to allow PHP 7.4 - 8.3
+      * [!!!] Dropped support for TYPO3 v10.4
+
+ - :Version:
       1.8.0
    :Date:
       2023-10-10
