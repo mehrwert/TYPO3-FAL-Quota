@@ -20,6 +20,13 @@ The following is an overview of the changes in this extension. For more details 
       Release Description
 
  - :Version:
+      1.9.1
+   :Date:
+      2024-05-29
+   :Changes:
+      * Fix PHP version constraint to allow PHP all versions from 7.4 to 8.3
+
+ - :Version:
       1.9.0
    :Date:
       2024-05-29
