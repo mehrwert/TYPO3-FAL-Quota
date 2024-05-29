@@ -1,10 +1,10 @@
 <?php
 
-defined('TYPO3_MODE') || die();
+defined('TYPO3') || die();
 
 (static function() {
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-        'Mehrwert.FalQuota',
+        'FalQuota',
         'file',
         'falquota',
         'bottom',

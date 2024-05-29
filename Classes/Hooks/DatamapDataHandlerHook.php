@@ -108,7 +108,7 @@ class DatamapDataHandlerHook
      */
     protected function getLanguageService(): LanguageService
     {
-        if (VersionNumberUtility::convertVersionNumberToInteger(TYPO3_version) < 10000000) {
+        if (VersionNumberUtility::convertVersionNumberToInteger(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class)->getVersion()) < 10000000) {
             $languageService = $GLOBALS['LANG'];
         } else {
             $languageService = GeneralUtility::makeInstance(LanguageService::class);
