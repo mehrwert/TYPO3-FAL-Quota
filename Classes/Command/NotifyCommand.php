@@ -18,7 +18,6 @@ use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -163,21 +162,14 @@ final class NotifyCommand extends Command
                 ]
             );
 
-            // v10: Use Symfony Mail compatible method
-            if (VersionNumberUtility::convertVersionNumberToInteger(\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class)->getVersion()) >= 10000000) {
-                return $this->sendNotificationWithSymfonyMail($subject, $senderEmailAddress, $senderEmailName, $body, $validRecipientAddresses) ? 1 : 0;
-            }
-            // v9: Use SwiftMailer
-            $mailMessage = GeneralUtility::makeInstance(MailMessage::class);
-            foreach ($validRecipientAddresses as $recipient) {
-                $mailMessage->addTo($recipient);
-            }
-
-            return $mailMessage
-                ->setSubject($subject)
-                ->addFrom($senderEmailAddress, $senderEmailName)
-                ->text($body)
-                ->send();
+            return $this
+                ->sendNotificationWithSymfonyMail(
+                    $subject,
+                    $senderEmailAddress,
+                    $senderEmailName,
+                    $body,
+                    $validRecipientAddresses
+                ) ? 1 : 0;
         }
 
         return 0;
