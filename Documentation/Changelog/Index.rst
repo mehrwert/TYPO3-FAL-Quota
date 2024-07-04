@@ -20,6 +20,13 @@ The following is an overview of the changes in this extension. For more details 
       Release Description
 
  - :Version:
+      1.9.2
+   :Date:
+      2024-07-04
+   :Changes:
+      * Remove deprecated/dropped property in Datamap / DataHandler Hook
+
+ - :Version:
       1.9.1
    :Date:
       2024-05-29

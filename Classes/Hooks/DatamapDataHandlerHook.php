@@ -29,7 +29,7 @@ class DatamapDataHandlerHook
      */
     public function processDatamap_postProcessFieldArray($status, $table, $id, $fieldArray, DataHandler $tceMain): void
     {
-        if ($tceMain->bypassFileHandling || empty($tceMain->datamap['sys_file_storage'])) {
+        if (empty($tceMain->datamap['sys_file_storage'])) {
             return;
         }
         foreach ($tceMain->datamap['sys_file_storage'] as $storageId => $storage) {
