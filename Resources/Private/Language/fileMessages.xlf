@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages">
+        <header/>
+        <body>
+            <trans-unit id="FileUtility.CouldNotDeleteDirectory1">
+                <source>Could not delete directory "%s"!</source>
+            </trans-unit>
+            <trans-unit id="FileUtility.CouldNotDeleteFile">
+                <source>Could not delete file "%s".</source>
+            </trans-unit>
+            <trans-unit id="FileUtility.DirectoryNotCreated">
+                <source>Directory "%s" not created.</source>
+            </trans-unit>
+            <trans-unit id="FileUtility.DirectoryWasNotCopiedTo">
+                <source>Directory "%s" was not copied to "%s".</source>
+            </trans-unit>
+            <trans-unit id="FileUtility.DirectoryWasNotMovedTo">
+                <source>Directory "%s" was not moved to "%s".</source>
+            </trans-unit>
+            <trans-unit id="FileUtility.DirectoryWasNotRenamed">
+                <source>Directory "%s" was not renamed.</source>
+            </trans-unit>
+            <trans-unit id="FileUtility.FileWasNotCopiedTo">
+                <source>File "%s" was not copied to "%s".</source>
+            </trans-unit>
+            <trans-unit id="FileUtility.FileWasNotCreated">
+                <source>File "%s" was not created.</source>
+            </trans-unit>
+            <trans-unit id="FileUtility.FileWasNotRenamed">
+                <source>File "%s" was not renamed.</source>
+            </trans-unit>
+            <trans-unit id="FileUtility.FileWasNotSaved">
+                <source>File "%s" was not saved.</source>
+            </trans-unit>
+            <trans-unit id="FileUtility.UploadedFileCouldNotBeMoved">
+                <source>Uploaded file could not be moved.</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

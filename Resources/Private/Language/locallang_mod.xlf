@@ -20,22 +20,22 @@
                 <source>Name</source>
             </trans-unit>
             <trans-unit id="table.driver">
-                <source>FAL Driver</source>
+                <source>FAL driver</source>
             </trans-unit>
             <trans-unit id="table.current_usage">
-                <source>Current Storage taken</source>
+                <source>Current usage</source>
             </trans-unit>
             <trans-unit id="table.current_threshold">
-                <source>Current Usage</source>
+                <source>Current usage rate</source>
             </trans-unit>
             <trans-unit id="table.soft_quota">
                 <source>Quota</source>
             </trans-unit>
             <trans-unit id="table.hard_limit">
-                <source>Hard Limit</source>
+                <source>Hard limit</source>
             </trans-unit>
             <trans-unit id="table.quota_warning_threshold">
-                <source>Warning Threshold</source>
+                <source>Warning threshold</source>
             </trans-unit>
             <trans-unit id="table.recipients">
                 <source>Recipients</source>

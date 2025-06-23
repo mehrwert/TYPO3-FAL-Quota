@@ -2,7 +2,8 @@
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
     xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
-    data-namespace-typo3-fluid="true">
+    data-namespace-typo3-fluid="true"
+    lang="en">
 
 <tr class="storage-row{f:if(condition: '{storage.over_threshold}', then: ' warning')} {f:if(condition: '{storage.over_quota}', then: ' danger')}">
     <td>{storage.uid}</td>
@@ -10,7 +11,7 @@
     <td>{storage.driver}</td>
     <td class="number">{storage.current_usage}</td>
     <td class="pie-chart col-center">
-        <div class="pie{f:if(condition: '{storage.over_threshold}', then: '-exceeded-quota')}"><f:format.number decimals="0">{storage.current_threshold}</f:format.number>%</div><br/>
+        <div class="pie {f:if(condition: '{storage.over_threshold}', then: 'exceeded-quota')}" data-current-threshold="{storage.current_threshold_raw}"></div>
         {storage.current_threshold} %
     </td>
     <td class="number">{storage.soft_quota}</td>

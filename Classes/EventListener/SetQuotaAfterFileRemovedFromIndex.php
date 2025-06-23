@@ -13,12 +13,12 @@ namespace Mehrwert\FalQuota\EventListener;
 
 use Doctrine\DBAL\Exception as DbalException;
 use Mehrwert\FalQuota\Handler\QuotaHandler;
-use TYPO3\CMS\Core\Resource\Event\AfterFileContentsSetEvent;
+use TYPO3\CMS\Core\Resource\Event\AfterFileRemovedFromIndexEvent;
 
 /**
- * Set the storage size after a file was added
+ * Set the storage size after a deleted file was removed from the file index table.
  */
-readonly class SetQuotaAfterFileContentSet
+readonly class SetQuotaAfterFileRemovedFromIndex
 {
     public function __construct(
         private QuotaHandler $quotaHandler
@@ -27,8 +27,8 @@ readonly class SetQuotaAfterFileContentSet
     /**
      * @throws DbalException
      */
-    public function __invoke(AfterFileContentsSetEvent $event): void
+    public function __invoke(AfterFileRemovedFromIndexEvent $event): void
     {
-        $this->quotaHandler->updateQuotaByFile($event->getFile());
+        $this->quotaHandler->updateQuotaByDeletedFileUid($event->getFileUid());
     }
 }

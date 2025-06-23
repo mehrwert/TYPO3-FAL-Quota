@@ -4,38 +4,39 @@ declare(strict_types=1);
 
 namespace Mehrwert\FalQuota\Handler;
 
-use Mehrwert\FalQuota\Slot\ResourceStorageException;
+use Doctrine\DBAL\Exception as DbalException;
+use Mehrwert\FalQuota\Exception\ResourceStorageException;
 use Mehrwert\FalQuota\Utility\QuotaUtility;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Exception;
+use TYPO3\CMS\Core\Exception as CoreException;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageQueue;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\FolderInterface;
+use TYPO3\CMS\Core\Resource\ResourceStorage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class QuotaHandler
 {
-    /**
-     * Configured soft quota for the current storage
-     * @var float
-     */
-    private $softQuota;
+    private string $errorMessage = '';
 
     /**
-     * Current usage of the current storage
-     * @var float
+     * @var array<int,int>
      */
-    private $currentUsage;
+    private array $storageUidByDeletedFileUidMap = [];
+
+    public function __construct(
+        private readonly FlashMessageService $flashMessageService
+    ) {}
 
     /**
      * Update the storage quota usage where the file resides in
      *
-     * @param FileInterface $file
+     * @throws DbalException
      */
     public function updateQuotaByFile(FileInterface $file): void
     {
@@ -47,7 +48,7 @@ class QuotaHandler
                     )
                 )
             );
-        } catch (InsufficientFolderAccessPermissionsException | \Exception $e) {
+        } catch (InsufficientFolderAccessPermissionsException | \Exception) {
             // Just catch the exception
         }
     }
@@ -55,205 +56,172 @@ class QuotaHandler
     /**
      * Update the storage quota usage
      *
-     * @param Folder $folder
+     * @throws DbalException
      */
-    public function updateQuotaByFolder(Folder $folder): void
+    public function updateQuotaByFolder(FolderInterface $folder): void
     {
-        GeneralUtility::makeInstance(QuotaUtility::class)->updateStorageUsage($folder->getStorage()->getUid());
+        QuotaUtility::updateStorageUsage($folder->getStorage()->getUid());
+    }
+
+    /**
+     * Update the storage quota usage
+     *
+     * @throws DbalException
+     */
+    public function updateQuotaByDeletedFileUid(int $fileUid): void
+    {
+        QuotaUtility::updateStorageUsage($this->storageUidByDeletedFileUidMap[$fileUid]);
     }
 
     /**
      * General quota check using the values in the storage
      *
-     * @param FolderInterface $targetFolder
-     * @param int $code
-     * @param string $action
-     * @param string $file
+     * @throws DbalException
      */
-    public function checkQuota(FolderInterface $targetFolder, $code, $action = '', $file = ''): void
+    public function checkQuota(FolderInterface $targetFolder, int $code, string $action = '', string $file = ''): void
     {
-        if ($this->isOverQuota($targetFolder->getStorage()->getUid()) === true) {
-            $message = $this->getLocalizedMessage('over_quota', [$this->currentUsage, $this->softQuota]);
-            $this->addMessageToFlashMessageQueue($message);
-            throw new ResourceStorageException($message, $code);
+        QuotaUtility::updateStorageUsage($targetFolder->getStorage()->getUid());
+        if ($this->isOverLimit($targetFolder->getStorage())) {
+            $this->addErrorMessageToFlashMessageQueue();
+            throw new ResourceStorageException($this->errorMessage, $code);
         }
     }
 
     /**
      * Estimate the result size of the copy folder command
-     *
-     * @param Folder $folder
-     * @param Folder $targetFolder
-     * @param int $code
      */
-    public function preEstimateUsageAfterCopyFolderCommand(Folder $folder, Folder $targetFolder, $code): void
+    public function preEstimateUsageAfterCopyFolderCommand(Folder $folder, Folder $targetFolder, int $code): void
     {
-        $quotaUtility = GeneralUtility::makeInstance(QuotaUtility::class);
-        $storageDetails = $quotaUtility->getStorageDetails($targetFolder->getStorage()->getUid());
-        // Check if quota has been set
-        if ($storageDetails['soft_quota_raw'] > 0) {
-            $folderSize = $quotaUtility->getFolderSize($folder, $storageDetails['current_usage_raw']);
-            $estimateUsage = $storageDetails['current_usage_raw'] + $folderSize;
-            if ($estimateUsage > $storageDetails['soft_quota_raw']) {
-                $message = $this->getLocalizedMessage(
-                    'copy_folder_result_will_exceed_quota',
-                    [
-                        $storageDetails['soft_quota'],
-                    ]
-                );
-                $this->addMessageToFlashMessageQueue($message);
-                throw new ResourceStorageException($message, $code);
-            }
+        $folderSize = QuotaUtility::getFolderSize(
+            $folder,
+            QuotaUtility::getHardLimit($targetFolder->getStorage()) - QuotaUtility::getCurrentUsage($targetFolder->getStorage())
+        );
+        if ($this->isEstimatedUsageOverLimit($targetFolder->getStorage(), $folderSize)) {
+            $this->errorMessage = $this->getLocalizedMessage(
+                'copy_folder_result_will_exceed_quota',
+                [
+                    QuotaUtility::numberFormat(QuotaUtility::getSoftQuota($targetFolder->getStorage()), 'MB'),
+                ]
+            );
+            $this->addErrorMessageToFlashMessageQueue();
+            throw new ResourceStorageException($this->errorMessage, $code);
         }
     }
 
     /**
      * Estimate the file size with the new content
-     *
-     * @param FileInterface $file
-     * @param mixed $content
-     * @param int $code
      */
-    public function preEstimateUsageAfterSetContentCommand(FileInterface $file, $content, $code): void
+    public function preEstimateUsageAfterUploadCommand(ResourceStorage $storage, int $fileSize, int $code): void
     {
-        $contentSize = strlen($content);
-        $storageDetails = GeneralUtility::makeInstance(QuotaUtility::class)->getStorageDetails($file->getStorage()->getUid());
-        // Check if quota has been set
-        if ($storageDetails['soft_quota_raw'] > 0) {
-            // Estimate new usage
-            $estimatedUsage = $storageDetails['current_usage_raw'] + $contentSize;
-            // Result would exceed quota
-            if ($estimatedUsage >= $storageDetails['soft_quota_raw']) {
-                $message = $this->getLocalizedMessage(
-                    'result_will_exceed_quota',
-                    [
-                        number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
-                        $storageDetails['soft_quota'],
-                    ]
-                );
-                $this->addMessageToFlashMessageQueue($message);
-                throw new ResourceStorageException($message, $code);
-            }
+        if ($this->isEstimatedUsageOverLimit($storage, $fileSize)) {
+            $this->addErrorMessageToFlashMessageQueue();
+            throw new ResourceStorageException($this->errorMessage, $code);
+        }
+    }
+
+    /**
+     * Estimate the file size with the new content
+     */
+    public function preEstimateUsageAfterSetContentCommand(FileInterface $file, mixed $content, int $code): void
+    {
+        $contentSize = strlen((string)$content);
+        if ($this->isEstimatedUsageOverLimit($file->getStorage(), $contentSize)) {
+            $this->addErrorMessageToFlashMessageQueue();
+            throw new ResourceStorageException($this->errorMessage, $code);
         }
     }
 
     /**
      * Estimate the storage utilization after the file has been copied
-     *
-     * @param FileInterface $file
-     * @param Folder $targetFolder
-     * @param int $code
      */
-    public function preEstimateUsageAfterCopyCommand(FileInterface $file, Folder $targetFolder, $code): void
+    public function preEstimateUsageAfterCopyCommand(FileInterface $file, Folder $targetFolder, int $code): void
     {
         $copiedFileSize = $file->getSize();
-        $storageDetails = GeneralUtility::makeInstance(QuotaUtility::class)->getStorageDetails($targetFolder->getStorage()->getUid());
-        // Check if quota has been set
-        if ($storageDetails['soft_quota_raw'] > 0) {
-            // Estimate new usage
-            $estimatedUsage = $storageDetails['current_usage_raw'] + $copiedFileSize;
-            // Result would exceed quota
-            if ($estimatedUsage >= $storageDetails['soft_quota_raw']) {
-                $message = $this->getLocalizedMessage(
-                    'result_will_exceed_quota',
-                    [
-                        number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
-                        $storageDetails['soft_quota'],
-                    ]
-                );
-                $this->addMessageToFlashMessageQueue($message);
-                throw new ResourceStorageException($message, $code);
-            }
+        if ($this->isEstimatedUsageOverLimit($targetFolder->getStorage(), $copiedFileSize)) {
+            $this->addErrorMessageToFlashMessageQueue();
+            throw new ResourceStorageException($this->errorMessage, $code);
         }
     }
 
     /**
-     * Estimate the utilization of the the target storage after the file would have been moved
-     *
-     * @param FileInterface $file
-     * @param Folder $targetFolder
-     * @param int $code
+     * Estimate the utilization of the target storage after the file would have been moved
      */
-    public function preEstimateUsageAfterMoveCommand(FileInterface $file, Folder $targetFolder, $code): void
+    public function preEstimateUsageAfterMoveCommand(FileInterface $file, Folder $targetFolder, int $code): void
     {
         // Use MB as unit for all numeric operations
         $movedFileSize = $file->getSize();
-        $storageDetails = GeneralUtility::makeInstance(QuotaUtility::class)->getStorageDetails($targetFolder->getStorage()->getUid());
-        // Check if quota has been set
-        if ($storageDetails['soft_quota_raw'] > 0) {
-            // Estimate new usage
-            $estimatedUsage = $storageDetails['current_usage_raw'] + $movedFileSize;
-            // Result would exceed quota
-            if ($estimatedUsage >= $storageDetails['soft_quota_raw']) {
-                $message = $this->getLocalizedMessage(
-                    'result_will_exceed_quota',
-                    [
-                        number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
-                        $storageDetails['soft_quota'],
-                    ]
-                );
-                $this->addMessageToFlashMessageQueue($message);
-                throw new ResourceStorageException($message, $code);
-            }
+        if ($this->isEstimatedUsageOverLimit($targetFolder->getStorage(), $movedFileSize)) {
+            $this->addErrorMessageToFlashMessageQueue();
+            throw new ResourceStorageException($this->errorMessage, $code);
         }
     }
 
     /**
      * Estimate the utilization after the file would have been replaced with a smaller/bigger file
-     *
-     * @param FileInterface $file
-     * @param string $localFilePath
-     * @param int $code
      */
-    public function preEstimateUsageAfterReplaceCommand(FileInterface $file, $localFilePath, $code): void
+    public function preEstimateUsageAfterReplaceCommand(FileInterface $file, string $localFilePath, int $code): void
     {
         if (is_file($localFilePath)) {
             $newFileSize = filesize($localFilePath);
             $currentFileSize = $file->getSize();
-            $storageDetails = GeneralUtility::makeInstance(QuotaUtility::class)->getStorageDetails($file->getStorage()->getUid());
-            // Check if quota has been set
-            if ($storageDetails['soft_quota_raw'] > 0) {
-                // Estimate new usage
-                $estimatedUsage = ($storageDetails['current_usage_raw'] - $currentFileSize) + $newFileSize;
-                // Result would exceed quota
-                if ($estimatedUsage >= $storageDetails['soft_quota_raw']) {
-                    $message = $this->getLocalizedMessage(
-                        'result_will_exceed_quota',
-                        [
-                            number_format($estimatedUsage / 1024 / 1024, 2, ',', '.'),
-                            $storageDetails['soft_quota'],
-                        ]
-                    );
-                    $this->addMessageToFlashMessageQueue($message);
-                    throw new ResourceStorageException($message, $code);
-                }
+            if ($this->isEstimatedUsageOverLimit($file->getStorage(), $newFileSize - $currentFileSize)) {
+                $this->addErrorMessageToFlashMessageQueue();
+                throw new ResourceStorageException($this->errorMessage, $code);
             }
         }
     }
 
     /**
      * Check if storage is over quota
-     *
-     * @param int $storageId
-     * @return bool
      */
-    protected function isOverQuota($storageId): bool
+    protected function isOverLimit(ResourceStorage $storage): bool
     {
-        $storageDetails = GeneralUtility::makeInstance(QuotaUtility::class)->getStorageDetails($storageId);
-        $this->softQuota = $storageDetails['soft_quota'];
-        $this->currentUsage = $storageDetails['current_usage'];
+        $hardLimit = QuotaUtility::getHardLimit($storage);
+        $currentUsage = QuotaUtility::getCurrentUsage($storage);
+        if ($currentUsage > $hardLimit) {
+            $this->errorMessage = $this->getLocalizedMessage(
+                'over_quota',
+                [
+                    $currentUsage,
+                    QuotaUtility::numberFormat(QuotaUtility::getSoftQuota($storage), 'MB'),
+                ]
+            );
+            return true;
+        }
+        return false;
+    }
 
-        return $storageDetails['over_quota'];
+    /**
+     * Check if estimated usage of storage is over quota
+     */
+    protected function isEstimatedUsageOverLimit(ResourceStorage $storage, int $contentSize): bool
+    {
+        // Check if quota has been set
+        $hardLimit = QuotaUtility::getHardLimit($storage);
+        if ($hardLimit > 0) {
+            // Estimate new usage
+            $estimatedUsage = QuotaUtility::getCurrentUsage($storage) + $contentSize;
+            // Result would exceed quota
+            if ($estimatedUsage >= $hardLimit) {
+                $this->errorMessage = $this->getLocalizedMessage(
+                    'result_will_exceed_quota',
+                    [
+                        QuotaUtility::numberFormat($estimatedUsage, 'MB', fractionDigits: 2),
+                        QuotaUtility::numberFormat(QuotaUtility::getSoftQuota($storage), 'MB'),
+                    ]
+                );
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
      * Get a localized message for quota warnings
      *
-     * @param string $localizationKey
-     * @param array $replaceMarkers
-     * @return string
+     * @param array<string|int|float> $replaceMarkers
      */
-    protected function getLocalizedMessage($localizationKey, array $replaceMarkers = []): string
+    protected function getLocalizedMessage(string $localizationKey, array $replaceMarkers = []): string
     {
         $label = $this->getLanguageService()->sL('LLL:EXT:fal_quota/Resources/Private/Language/locallang_resource_storage_messages.xlf:' . $localizationKey);
 
@@ -262,26 +230,22 @@ class QuotaHandler
 
     /**
      * Adds a localized FlashMessage to the message queue
-     *
-     * @param string $message
-     * @param int $severity
-     * @throws \InvalidArgumentException
      */
-    protected function addMessageToFlashMessageQueue($message, $severity = FlashMessage::ERROR): void
+    protected function addErrorMessageToFlashMessageQueue(): void
     {
-        if (\TYPO3\CMS\Core\Http\ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isBackend() || Environment::isCli()) {
+        if (Environment::isCli()) {
             return;
         }
         $flashMessage = GeneralUtility::makeInstance(
             FlashMessage::class,
-            $message,
+            $this->errorMessage,
             '',
-            $severity,
+            ContextualFeedbackSeverity::ERROR,
             true
         );
         try {
             $this->addFlashMessage($flashMessage);
-        } catch (Exception $e) {
+        } catch (CoreException) {
             // Just catch the exception
         }
     }
@@ -289,26 +253,21 @@ class QuotaHandler
     /**
      * Add flash message to message queue
      *
-     * @param FlashMessage $flashMessage
-     * @throws Exception
+     * @throws CoreException
      */
     protected function addFlashMessage(FlashMessage $flashMessage): void
     {
-        /** @var FlashMessageService $flashMessageService */
-        $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-
-        /** @var FlashMessageQueue $defaultFlashMessageQueue */
-        $defaultFlashMessageQueue = $flashMessageService->getMessageQueueByIdentifier();
+        $defaultFlashMessageQueue = $this->flashMessageService->getMessageQueueByIdentifier();
         $defaultFlashMessageQueue->enqueue($flashMessage);
     }
 
-    /**
-     * Returns LanguageService
-     *
-     * @return LanguageService
-     */
     protected function getLanguageService(): LanguageService
     {
         return $GLOBALS['LANG'];
+    }
+
+    public function rememberStorageIdForDeletedFile(FileInterface $file): void
+    {
+        $this->storageUidByDeletedFileUidMap[(int)$file->getProperty('uid')] = $file->getStorage()->getUid();
     }
 }
