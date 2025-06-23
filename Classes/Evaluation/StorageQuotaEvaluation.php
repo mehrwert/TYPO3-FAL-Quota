@@ -19,9 +19,9 @@ class StorageQuotaEvaluation
     /**
      * JavaScript code for client side validation/evaluation
      *
-     * @return string JavaScript code for client side validation/evaluation
+     * @return string
      */
-    public function returnFieldJS()
+    public function returnFieldJS(): string
     {
         return 'return value;';
     }
@@ -31,21 +31,21 @@ class StorageQuotaEvaluation
      *
      * @param string $value The field value to be evaluated
      * @param string $is_in The "is_in" value of the field configuration from TCA
-     * @param bool $set boolean defining if the value is written to the database or not
-     * @return string Evaluated field value
+     * @param bool   $set   boolean defining if the value is written to the database or not
      */
-    public function evaluateFieldValue($value, $is_in, &$set)
+    public function evaluateFieldValue(string $value, string $is_in, bool &$set): int
     {
-        return (int)$value * (1024 ** 2);
+        return (int)trim($value) * (1024 ** 2);
     }
 
     /**
      * Server-side validation/evaluation on opening the record
      *
-     * @param array $parameters Array with key 'value' containing the field value from the database
-     * @return string Evaluated field value
+     * @param array $parameters Array with a key 'value' containing the field value from the database
+     *
+     * @return int Evaluated field value
      */
-    public function deevaluateFieldValue(array $parameters)
+    public function deevaluateFieldValue(array $parameters): int
     {
         return (int)$parameters['value'] / (1024 ** 2);
     }

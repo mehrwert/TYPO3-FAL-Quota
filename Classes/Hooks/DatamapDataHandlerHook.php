@@ -14,26 +14,30 @@ namespace Mehrwert\FalQuota\Hooks;
 use Mehrwert\FalQuota\Utility\QuotaUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 
 /**
  * Class DatamapDataHandlerHook to check and format TCA values for quota fields in sys_file_storage records
  */
-class DatamapDataHandlerHook
+readonly class DatamapDataHandlerHook
 {
-    /**
-     * @param DataHandler $tceMain
-     * @param mixed $status
-     * @param mixed $table
-     * @param mixed $id
-     * @param mixed $fieldArray
-     */
-    public function processDatamap_postProcessFieldArray($status, $table, $id, $fieldArray, DataHandler $tceMain): void
+    private LanguageService $languageService;
+
+    public function __construct(
+        private StorageRepository $storageRepository,
+        LanguageServiceFactory $languageServiceFactory
+    ) {
+        $this->languageService = $languageServiceFactory->createFromUserPreferences($GLOBALS['BE_USER'] ?? null);
+    }
+
+    public function processDatamap_postProcessFieldArray(mixed $status, mixed $table, mixed $id, mixed $fieldArray, DataHandler $tceMain): void
     {
         if (empty($tceMain->datamap['sys_file_storage'])) {
             return;
         }
         foreach ($tceMain->datamap['sys_file_storage'] as $storageId => $storage) {
+            /** @var array{hard_limit: int, soft_quota: int} $storage */
             $this->validateQuotaConfiguration((int)$storageId, $storage, $tceMain);
         }
     }
@@ -41,9 +45,7 @@ class DatamapDataHandlerHook
     /**
      * Validate storage configuration
      *
-     * @param int $storageId
-     * @param array $storage
-     * @param DataHandler $tceMain
+     * @param array{hard_limit: int, soft_quota: int} $storage
      */
     private function validateQuotaConfiguration(int $storageId, array $storage, DataHandler $tceMain): void
     {
@@ -51,7 +53,7 @@ class DatamapDataHandlerHook
         $softQuota = (int)$storage['soft_quota'] * (1024 ** 2);
 
         if ($hardLimit > 0 && $hardLimit < $softQuota) {
-            $label = $this->getLanguageService()->sL('LLL:EXT:fal_quota/Resources/Private/Language/locallang_tce_hook_messages.xlf:' . 'quotaSettingMismatch');
+            $label = $this->languageService->sL('LLL:EXT:fal_quota/Resources/Private/Language/locallang_tce_hook_messages.xlf:' . 'quotaSettingMismatch');
             $message = vsprintf(
                 $label,
                 [
@@ -61,12 +63,13 @@ class DatamapDataHandlerHook
             );
             $this->logStorageError($tceMain, $storageId, $message);
         }
-        if ($storageId > 0) {
-            $availableSize = GeneralUtility::makeInstance(QuotaUtility::class)->getAvailableSpaceOnStorageOnDevice($storageId);
+        $resourceStorage = $this->storageRepository->findByUid($storageId);
+        if ($resourceStorage !== null) {
+            $availableSize = QuotaUtility::getAvailableSpaceOnStorageOnDevice($resourceStorage);
             // Check settings if available size is not -1
             if ($availableSize >= 0) {
                 if ($hardLimit > $availableSize || $softQuota > $availableSize) {
-                    $label = $this->getLanguageService()->sL('LLL:EXT:fal_quota/Resources/Private/Language/locallang_tce_hook_messages.xlf:' . 'diskspaceWarning');
+                    $label = $this->languageService->sL('LLL:EXT:fal_quota/Resources/Private/Language/locallang_tce_hook_messages.xlf:' . 'diskspaceWarning');
                     $message = vsprintf(
                         $label,
                         [
@@ -83,10 +86,6 @@ class DatamapDataHandlerHook
 
     /**
      * Log storage errors
-     *
-     * @param DataHandler $tceMain
-     * @param int $storageId
-     * @param string $message
      */
     private function logStorageError(DataHandler $tceMain, int $storageId, string $message): void
     {
@@ -99,15 +98,5 @@ class DatamapDataHandlerHook
             $message,
             0
         );
-    }
-
-    /**
-     * Returns LanguageService
-     *
-     * @return LanguageService
-     */
-    protected function getLanguageService(): LanguageService
-    {
-        return GeneralUtility::makeInstance(LanguageService::class);
     }
 }

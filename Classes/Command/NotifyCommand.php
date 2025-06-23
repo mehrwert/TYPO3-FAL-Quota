@@ -11,15 +11,24 @@ namespace Mehrwert\FalQuota\Command;
  * file 'LICENSE.md', which is part of this source code package.
  */
 
+use Doctrine\DBAL\Exception as DbalException;
+use Mehrwert\FalQuota\Event\AddAdditionalRecipientsEvent;
 use Mehrwert\FalQuota\Utility\QuotaUtility;
+use Networkteam\SentryClient\Client;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mime\Address;
+use TYPO3\CMS\Core\Mail\MailerInterface;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -31,50 +40,70 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 final class NotifyCommand extends Command
 {
-    /**
-     * @var QuotaUtility
-     */
-    private $quotaUtility;
+    private SymfonyStyle $io;
+
+    public function __construct(
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly LoggerInterface $logger,
+        private readonly MailerInterface $mailer,
+        private readonly StorageRepository $storageRepository
+    ) {
+        parent::__construct();
+    }
 
     /**
      * @inheritDoc
      */
+    #[\Override]
     protected function configure(): void
     {
         $this->setDescription(
-            LocalizationUtility::translate('LLL:EXT:fal_quota/Resources/Private/Language/locallang_task.xlf:notify.command.description')
+            LocalizationUtility::translate('LLL:EXT:fal_quota/Resources/Private/Language/locallang_task.xlf:notify.command.description') ?? ''
         );
     }
 
     /**
      * @inheritDoc
      */
+    #[\Override]
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->quotaUtility = GeneralUtility::makeInstance(QuotaUtility::class);
+        $this->io = new SymfonyStyle($input, $output);
     }
 
     /**
      * @inheritDoc
+     *
+     * @throws DbalException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    #[\Override]
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $storages = GeneralUtility::makeInstance(StorageRepository::class)->findAll();
-        if (!empty($storages)) {
-            foreach ($storages as $storage) {
-                $currentUsage = $this->quotaUtility->getTotalDiskSpaceUsedInStorage($storage->getUid());
+        foreach ($this->storageRepository->findAll() as $storage) {
+            $currentUsage = QuotaUtility::getTotalDiskSpaceUsedInStorage($storage->getUid());
+
+            try {
                 $this->checkThreshold($storage, $currentUsage);
+            } catch (TransportExceptionInterface|\Exception $exception) {
+                $errorMessage = 'FAL quota – Mail could not be sent: ' . $exception->getMessage();
+                $this->io->error($errorMessage);
+
+                if (method_exists(Client::class, 'captureException')) {
+                    Client::captureException($exception);
+                } else {
+                    $this->logger->log(LogLevel::ERROR, $errorMessage);
+                }
+                return Command::FAILURE;
             }
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
      * Check the threshold and send notifications if exceeding limits
      *
-     * @param ResourceStorage $storage
-     * @param int $currentUsage
+     * @throws TransportExceptionInterface
      */
     private function checkThreshold(ResourceStorage $storage, int $currentUsage): void
     {
@@ -99,32 +128,30 @@ final class NotifyCommand extends Command
     /**
      * Send the over-quota-notification to all configured recipients
      *
-     * @param ResourceStorage $storage
-     * @param array           $quotaConfiguration
-     * @param int             $currentThreshold
-     * @return int
+     * @param array{quota_warning_recipients:string, soft_quota:int, current_usage:int} $quotaConfiguration
+     *
+     * @throws TransportExceptionInterface
      */
-    private function sendNotification(ResourceStorage $storage, array $quotaConfiguration, int $currentThreshold): int
+    private function sendNotification(ResourceStorage $storage, array $quotaConfiguration, int $currentThreshold): void
     {
         $hasRecipients = false;
-        $warningRecipients = GeneralUtility::trimExplode(',', $quotaConfiguration['quota_warning_recipients'], true);
+        $warningRecipients = GeneralUtility::trimExplode(
+            ',',
+            $quotaConfiguration['quota_warning_recipients'],
+            true
+        );
         $validRecipientAddresses = [];
 
-        $additionalRecipients = [];
-
-        /** @var Dispatcher $signalSlotDispatcher */
-        $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
-        $signalArguments = $signalSlotDispatcher->dispatch(
-            __CLASS__,
-            'addAdditionalRecipients',
-            [
-                $storage,
-                $additionalRecipients,
-            ]
+        /** @var AddAdditionalRecipientsEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new AddAdditionalRecipientsEvent(
+                [],
+                $storage
+            )
         );
-        $additionalRecipients = array_pop($signalArguments);
-
-        $recipients = array_unique(array_merge($warningRecipients, $additionalRecipients));
+        $recipients = array_unique(
+            array_merge($warningRecipients, $event->getAdditionalRecipients())
+        );
 
         foreach ($recipients as $recipient) {
             if (GeneralUtility::validEmail($recipient)) {
@@ -149,7 +176,7 @@ final class NotifyCommand extends Command
                     $storage->getUid(),
                     $GLOBALS['TYPO3_CONF_VARS']['SYS']['sitename'],
                 ]
-            );
+            ) ?? '';
             $body = LocalizationUtility::translate(
                 'email.body',
                 'FalQuota',
@@ -161,31 +188,23 @@ final class NotifyCommand extends Command
                     QuotaUtility::numberFormat($quotaConfiguration['current_usage'], 'MB'),
                     $currentThreshold . '%',
                 ]
-            );
+            ) ?? '';
 
-            return $this
+            $this
                 ->sendNotificationWithSymfonyMail(
                     $subject,
                     $senderEmailAddress,
                     $senderEmailName,
                     $body,
                     $validRecipientAddresses
-                ) ? 1 : 0;
+                );
         }
-
-        return 0;
     }
 
     /**
-     * Use Symfony Mail compatible MailMessage calls for TYPO3 >= v10
+     * @param string[] $recipients
      *
-     * @param string $subject
-     * @param string $senderEmailAddress
-     * @param string $senderEmailName
-     * @param string $body
-     * @param array $recipients
-     * @return bool
-     * @since 1.1.0
+     * @throws TransportExceptionInterface
      */
     private function sendNotificationWithSymfonyMail(
         string $subject,
@@ -193,14 +212,15 @@ final class NotifyCommand extends Command
         string $senderEmailName,
         string $body,
         array $recipients
-    ): bool {
-        $mailMessage = GeneralUtility::makeInstance(MailMessage::class);
-        $mailMessage->setTo($recipients);
-
-        return $mailMessage
-            ->subject($subject)
-            ->from(new \Symfony\Component\Mime\Address($senderEmailAddress, $senderEmailName))
-            ->text($body)
-            ->send();
+    ): void {
+        $this
+            ->mailer
+            ->send(
+                GeneralUtility::makeInstance(MailMessage::class)
+                    ->setTo($recipients)
+                    ->subject($subject)
+                    ->from(new Address($senderEmailAddress, $senderEmailName))
+                    ->text($body)
+            );
     }
 }

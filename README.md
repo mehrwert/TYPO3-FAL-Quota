@@ -1,6 +1,6 @@
 # FAL Quota for TYPO3
 
-This extensions provides a virtual Quota for FAL using Signals/Slots if the underlying file system does not support
+This extension provides a virtual Quota for FAL using Signals/Slots if the underlying file system does not support
 or cannot provide one. A CLI command updates the quota usage periodically and sends notification mails to recipients
 defined per storage.
 
