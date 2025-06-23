@@ -1,5 +1,6 @@
 <?php
 
+/** @var string $_EXTKEY */
 $EM_CONF[$_EXTKEY] = [
     'title' => 'FAL Quota',
     'description' => 'This extension provides virtual Quotas for FAL Storages.',
@@ -8,10 +9,10 @@ $EM_CONF[$_EXTKEY] = [
     'author_email' => 'typo3@mehrwert.de',
     'author_company' => 'mehrwert.de',
     'state' => 'stable',
-    'version' => '1.9.2',
+    'version' => '12.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '11.5.0-11.5.99',
+            'typo3' => '12.4.0-12.4.99',
         ],
         'conflicts' => [
         ],

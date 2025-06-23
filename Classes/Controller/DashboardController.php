@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Mehrwert\FalQuota\Controller;
 
 use Mehrwert\FalQuota\Utility\QuotaUtility;
