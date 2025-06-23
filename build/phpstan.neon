@@ -1,0 +1,21 @@
+includes:
+  - phpstan-baseline.neon
+
+parameters:
+  level: 8
+
+  # Set to true during local runs to find unmatched ignored errors. bamboo needs this to be set to false.
+  reportUnmatchedIgnoredErrors: false
+
+  tmpDir: ../.Build/var/cache/
+
+  paths:
+    - ../Classes
+    - ../Configuration
+
+  excludePaths:
+    - ../.Build
+    - ../Resources
+
+  ignoreErrors:
+    - '#Variable \$_EXTKEY might not be defined\.#'
