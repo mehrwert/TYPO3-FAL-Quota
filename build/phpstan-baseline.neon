@@ -1,0 +1,126 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Command\\\\NotifyCommand\\:\\:sendNotification\\(\\) has parameter \\$quotaConfiguration with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../Classes/Command/NotifyCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$description of method Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\:\\:setDescription\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: ../Classes/Command/NotifyCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$subject of method Mehrwert\\\\FalQuota\\\\Command\\\\NotifyCommand\\:\\:sendNotificationWithSymfonyMail\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: ../Classes/Command/NotifyCommand.php
+
+		-
+			message: "#^Parameter \\#4 \\$body of method Mehrwert\\\\FalQuota\\\\Command\\\\NotifyCommand\\:\\:sendNotificationWithSymfonyMail\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: ../Classes/Command/NotifyCommand.php
+
+		-
+			message: "#^Argument of an invalid type array\\<TYPO3\\\\CMS\\\\Core\\\\Resource\\\\ResourceStorage\\>\\|TYPO3\\\\CMS\\\\Core\\\\Resource\\\\ResourceStorage supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../Classes/Command/UpdateCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$description of method Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\:\\:setDescription\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: ../Classes/Command/UpdateCommand.php
+
+		-
+			message: "#^Parameter \\#3 \\$description of method Symfony\\\\Component\\\\Console\\\\Command\\\\Command\\:\\:addArgument\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: ../Classes/Command/UpdateCommand.php
+
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Evaluation\\\\StorageQuotaEvaluation\\:\\:deevaluateFieldValue\\(\\) has parameter \\$parameters with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../Classes/Evaluation/StorageQuotaEvaluation.php
+
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Evaluation\\\\StorageQuotaEvaluation\\:\\:deevaluateFieldValue\\(\\) should return string but returns \\(float\\|int\\)\\.$#"
+			count: 1
+			path: ../Classes/Evaluation/StorageQuotaEvaluation.php
+
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Evaluation\\\\StorageQuotaEvaluation\\:\\:evaluateFieldValue\\(\\) should return string but returns int\\.$#"
+			count: 1
+			path: ../Classes/Evaluation/StorageQuotaEvaluation.php
+
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Event\\\\AddAdditionalRecipientsEvent\\:\\:getAdditionalRecipients\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../Classes/Event/AddAdditionalRecipientsEvent.php
+
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Event\\\\AddAdditionalRecipientsEvent\\:\\:setAdditionalRecipients\\(\\) has parameter \\$additionalRecipients with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../Classes/Event/AddAdditionalRecipientsEvent.php
+
+		-
+			message: "#^Parameter \\#1 \\$folder of method Mehrwert\\\\FalQuota\\\\Handler\\\\QuotaHandler\\:\\:updateQuotaByFolder\\(\\) expects TYPO3\\\\CMS\\\\Core\\\\Resource\\\\Folder, TYPO3\\\\CMS\\\\Core\\\\Resource\\\\FolderInterface given\\.$#"
+			count: 1
+			path: ../Classes/EventListener/SetQuotaAfterFileMoved.php
+
+		-
+			message: "#^Parameter \\#1 \\$folder of method Mehrwert\\\\FalQuota\\\\Handler\\\\QuotaHandler\\:\\:updateQuotaByFolder\\(\\) expects TYPO3\\\\CMS\\\\Core\\\\Resource\\\\Folder, TYPO3\\\\CMS\\\\Core\\\\Resource\\\\FolderInterface\\|null given\\.$#"
+			count: 1
+			path: ../Classes/EventListener/SetQuotaAfterFolderCopied.php
+
+		-
+			message: "#^Parameter \\#1 \\$folder of method Mehrwert\\\\FalQuota\\\\Handler\\\\QuotaHandler\\:\\:updateQuotaByFolder\\(\\) expects TYPO3\\\\CMS\\\\Core\\\\Resource\\\\Folder, TYPO3\\\\CMS\\\\Core\\\\Resource\\\\FolderInterface\\|null given\\.$#"
+			count: 1
+			path: ../Classes/EventListener/SetQuotaAfterFolderMoved.php
+
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Handler\\\\QuotaHandler\\:\\:getLocalizedMessage\\(\\) has parameter \\$replaceMarkers with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../Classes/Handler/QuotaHandler.php
+
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Hooks\\\\DatamapDataHandlerHook\\:\\:validateQuotaConfiguration\\(\\) has parameter \\$storage with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../Classes/Hooks/DatamapDataHandlerHook.php
+
+		-
+			message: "#^Cannot call method fetchAssociative\\(\\) on Doctrine\\\\DBAL\\\\Result\\|int\\.$#"
+			count: 1
+			path: ../Classes/Updates/CommandIdentifierUpdateWizard.php
+
+		-
+			message: "#^Cannot call method fetchOne\\(\\) on Doctrine\\\\DBAL\\\\Result\\|int\\.$#"
+			count: 1
+			path: ../Classes/Updates/CommandIdentifierUpdateWizard.php
+
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Updates\\\\CommandIdentifierUpdateWizard\\:\\:checkIfWizardIsRequired\\(\\) has no return type specified\\.$#"
+			count: 1
+			path: ../Classes/Updates/CommandIdentifierUpdateWizard.php
+
+		-
+			message: "#^Property Mehrwert\\\\FalQuota\\\\Updates\\\\CommandIdentifierUpdateWizard\\:\\:\\$table has no type specified\\.$#"
+			count: 1
+			path: ../Classes/Updates/CommandIdentifierUpdateWizard.php
+
+		-
+			message: "#^Call to function unset\\(\\) contains undefined variable \\$files\\.$#"
+			count: 1
+			path: ../Classes/Utility/QuotaUtility.php
+
+		-
+			message: "#^Cannot call method fetchAll\\(\\) on Doctrine\\\\DBAL\\\\Result\\|int\\.$#"
+			count: 1
+			path: ../Classes/Utility/QuotaUtility.php
+
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Utility\\\\QuotaUtility\\:\\:getStorage\\(\\) should return TYPO3\\\\CMS\\\\Core\\\\Resource\\\\ResourceStorage but returns TYPO3\\\\CMS\\\\Core\\\\Resource\\\\ResourceStorage\\|null\\.$#"
+			count: 1
+			path: ../Classes/Utility/QuotaUtility.php
+
+		-
+			message: "#^Method Mehrwert\\\\FalQuota\\\\Utility\\\\QuotaUtility\\:\\:getStorageDetails\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../Classes/Utility/QuotaUtility.php
