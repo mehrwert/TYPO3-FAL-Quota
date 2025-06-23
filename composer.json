@@ -47,6 +47,7 @@
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.75",
+    "helmich/typo3-typoscript-lint": "^3.3",
     "networkteam/sentry-client": "^5.2",
     "phpstan/extension-installer": "^1.3",
     "rector/rector": "^1.1",
@@ -78,6 +79,9 @@
     ],
     "test:php:lint": [
       "php -l *.php $(find Classes -iname '*.php') $(find Configuration -iname '*.php')"
+    ],
+    "test:ts:lint": [
+      "typoscript-lint -c build/typoscript-lint.yml --fail-on-warnings"
     ]
   },
   "extra": {
