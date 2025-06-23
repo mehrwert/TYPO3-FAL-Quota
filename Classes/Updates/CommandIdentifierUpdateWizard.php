@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Mehrwert\FalQuota\Updates;
 
 use TYPO3\CMS\Core\Database\Connection;

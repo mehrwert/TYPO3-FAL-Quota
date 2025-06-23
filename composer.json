@@ -19,30 +19,39 @@
   "config": {
     "optimize-autoloader": true,
     "sort-packages": true,
-    "vendor-dir": ".build/vendor",
-    "bin-dir": ".build/bin",
+    "vendor-dir": ".Build/vendor",
+    "bin-dir": ".Build/bin",
     "allow-plugins": {
+      "cweagans/composer-patches": true,
       "typo3/class-alias-loader": true,
       "typo3/cms-composer-installers": true
     }
   },
   "require": {
-    "php": "^7.4 || ^8.3",
-    "typo3/cms-backend": "^11.5",
-    "typo3/cms-core": "^11.5",
-    "typo3/cms-extbase": "^11.5",
-    "typo3/cms-extensionmanager": "^11.5",
-    "typo3/cms-filelist": "^11.5",
-    "typo3/cms-fluid": "^11.5",
-    "typo3/cms-scheduler": "^11.5",
-    "typo3fluid/fluid": "^2.7"
+    "php": "^8.3",
+    "psr/event-dispatcher": "^1.0",
+    "psr/http-message": "^2.0",
+    "psr/log": "^3.0",
+    "symfony/console": "^7.3",
+    "symfony/mime": "^7.3",
+    "typo3/cms-backend": "^12.4",
+    "typo3/cms-core": "^12.4",
+    "typo3/cms-extbase": "^12.4",
+    "typo3/cms-extensionmanager": "^12.4",
+    "typo3/cms-filelist": "^12.4",
+    "typo3/cms-fluid": "^12.4",
+    "typo3/cms-install": "^12.4",
+    "typo3/cms-scheduler": "^12.4",
+    "typo3fluid/fluid": "^2.15"
   },
   "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.58",
+    "friendsofphp/php-cs-fixer": "^3.75",
+    "networkteam/sentry-client": "^5.2",
     "roave/security-advisories": "dev-latest",
-    "ssch/typo3-rector": "^2.6",
-    "typo3/cms-frontend": "^11.5",
-    "typo3/cms-install": "^11.5"
+    "ssch/typo3-rector": "^2.14",
+    "typo3/cms-beuser": "^12.4",
+    "typo3/cms-frontend": "^12.4",
+    "typo3/cms-lowlevel": "^12.4"
   },
   "suggest": {
     "ext-intl": "*"
@@ -53,17 +62,15 @@
     }
   },
   "scripts": {
-    "cs:fix": "PHP_CS_FIXER_IGNORE_ENV=1 php-cs-fixer fix --config=.php-cs-fixer.dist.php --verbose --using-cache=no --diff --path-mode=intersection .",
-    "post-autoload-dump": [
-      "mkdir -p .build/web/typo3conf/ext/",
-      "[ -L .build/web/typo3conf/ext/fal_quota ] || ln -snvf ../../../../. .build/web/typo3conf/ext/fal_quota"
+    "cs:fix": [
+      "@putenv PHP_CS_FIXER_IGNORE_ENV=1",
+      "php-cs-fixer fix --config=build/php-cs-fixer.php --verbose --using-cache=no --diff --path-mode=intersection ."
     ]
   },
   "extra": {
     "typo3/cms": {
       "extension-key": "fal_quota",
-      "web-dir": ".build/web",
-      "app-dir": ".build"
+      "web-dir": ".Build/web"
     }
   }
 }
