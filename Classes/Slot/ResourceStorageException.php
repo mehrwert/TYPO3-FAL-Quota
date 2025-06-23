@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Mehrwert\FalQuota\Slot;
 
 /*
@@ -13,6 +14,4 @@ namespace Mehrwert\FalQuota\Slot;
 /**
  * Exception thrown if quota limits in effect
  */
-class ResourceStorageException extends \RuntimeException
-{
-}
+class ResourceStorageException extends \RuntimeException {}

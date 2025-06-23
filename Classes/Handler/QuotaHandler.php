@@ -1,9 +1,9 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Mehrwert\FalQuota\Handler;
 
-use InvalidArgumentException;
 use Mehrwert\FalQuota\Slot\ResourceStorageException;
 use Mehrwert\FalQuota\Utility\QuotaUtility;
 use TYPO3\CMS\Core\Core\Environment;
@@ -265,7 +265,7 @@ class QuotaHandler
      *
      * @param string $message
      * @param int $severity
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      */
     protected function addMessageToFlashMessageQueue($message, $severity = FlashMessage::ERROR): void
     {
