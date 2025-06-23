@@ -13,17 +13,20 @@ namespace Mehrwert\FalQuota\EventListener;
 
 use Mehrwert\FalQuota\Handler\QuotaHandler;
 use TYPO3\CMS\Core\Resource\Event\BeforeFileAddedEvent;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Check that the quota after the file is added is not exceeded
  */
-class CheckQuotaBeforeFileAdded
+readonly class CheckQuotaBeforeFileAdded
 {
+    public function __construct(
+        private QuotaHandler $quotaHandler
+    ) {}
+
     public function __invoke(BeforeFileAddedEvent $event): void
     {
-        /** @var QuotaHandler $handler */
-        $handler = GeneralUtility::makeInstance(QuotaHandler::class);
-        $handler->checkQuota($event->getTargetFolder(), 1576872000);
+        $sourceFilePath = $event->getSourceFilePath();
+        $fileSize = filesize($sourceFilePath) ?: 0;
+        $this->quotaHandler->preEstimateUsageAfterUploadCommand($event->getStorage(), $fileSize, 1750778554);
     }
 }

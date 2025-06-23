@@ -7,7 +7,7 @@
                 <target>Die Quota (%s) liegt über der Obergrenze (%s). Die Quota sollte kleiner oder gleich der Obergrenze sein.</target>
             </trans-unit>
             <trans-unit id="diskspaceWarning">
-                <target>Der verfügbare Speicherplatz (%s) is  kleiner als die Quota (%s) oder die Obergrenze (%s).</target>
+                <target>Der verfügbare Speicherplatz (%s) ist kleiner als die Quota (%s) oder die Obergrenze (%s).</target>
             </trans-unit>
         </body>
     </file>

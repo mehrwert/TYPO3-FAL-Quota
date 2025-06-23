@@ -33,3 +33,48 @@ The example above defines a soft quota of 10 MB [1] and a hard limit of 15 MB [2
 greater than the soft quota values. The notification threshold value [3] defines the limit where the utilization check starts
 sending email notifications (if recipients have been specified and the Scheduler task has been configured.
 See :ref:`configuration` for details).
+
+Additional recipients can optionally provided by a PSR event listener.
+
+Example Configuration/Services.yaml:
+
+.. code-block:: yaml
+
+   services:
+     MyVendor\MyProject\EventListener\AddAdditionalRecipients:
+       public: true
+       tags:
+         - name: event.listener
+           identifier: 'MyVendor-MyProject-AddAdditionalRecipients'
+           event: MyVendor\MyProject\Event\AddAdditionalRecipientsEvent
+
+Example Classes/EventListener/AddAdditionalRecipients.php:
+
+.. code-block:: php
+
+   <?php
+
+   namespace MyVendor\MyProject\EventListener;
+
+   use Mehrwert\FalQuota\Event\AddAdditionalRecipientsEvent;
+
+   readonly class AddAdditionalRecipients
+   {
+       private const array ADDITIONAL_RECIPIENTS = [
+           1 => [
+             'person-for-storage-1@example.org',
+           ],
+           2 => [
+             'person-for-storage-2@example.org',
+             'another-person-for-storage-2@example.org',
+           ],
+       ];
+
+       public function __invoke(AddAdditionalRecipientsEvent $event): void
+       {
+           $storageId = $event->getStorage()->getUid();
+           $event->setAdditionalRecipients(
+               self::ADDITIONAL_RECIPIENTS[$storageId] ?? []
+           );
+       }
+   }

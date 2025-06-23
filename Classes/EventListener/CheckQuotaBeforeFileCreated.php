@@ -13,17 +13,18 @@ namespace Mehrwert\FalQuota\EventListener;
 
 use Mehrwert\FalQuota\Handler\QuotaHandler;
 use TYPO3\CMS\Core\Resource\Event\BeforeFileCreatedEvent;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Check that the quota after the file is added is not exceeded
  */
-class CheckQuotaBeforeFileCreated
+readonly class CheckQuotaBeforeFileCreated
 {
+    public function __construct(
+        private QuotaHandler $quotaHandler
+    ) {}
+
     public function __invoke(BeforeFileCreatedEvent $event): void
     {
-        /** @var QuotaHandler $handler */
-        $handler = GeneralUtility::makeInstance(QuotaHandler::class);
-        $handler->checkQuota($event->getFolder(), 1576872000);
+        $this->quotaHandler->checkQuota($event->getFolder(), 1576872000);
     }
 }

@@ -17,36 +17,16 @@ namespace Mehrwert\FalQuota\Evaluation;
 class StorageQuotaEvaluation
 {
     /**
-     * JavaScript code for client side validation/evaluation
-     *
-     * @return string JavaScript code for client side validation/evaluation
-     */
-    public function returnFieldJS()
-    {
-        return 'return value;';
-    }
-
-    /**
      * Server-side validation/evaluation on saving the record
+     *
+     * @see \Mehrwert\FalQuota\Form\Element\MegaByteInputElement
      *
      * @param string $value The field value to be evaluated
      * @param string $is_in The "is_in" value of the field configuration from TCA
      * @param bool $set boolean defining if the value is written to the database or not
-     * @return string Evaluated field value
      */
-    public function evaluateFieldValue($value, $is_in, &$set)
+    public function evaluateFieldValue(string $value, string $is_in, bool &$set): int
     {
-        return (int)$value * (1024 ** 2);
-    }
-
-    /**
-     * Server-side validation/evaluation on opening the record
-     *
-     * @param array $parameters Array with key 'value' containing the field value from the database
-     * @return string Evaluated field value
-     */
-    public function deevaluateFieldValue(array $parameters)
-    {
-        return (int)$parameters['value'] / (1024 ** 2);
+        return (int)trim($value) * (1024 ** 2);
     }
 }

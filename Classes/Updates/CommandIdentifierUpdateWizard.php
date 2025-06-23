@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mehrwert\FalQuota\Updates;
 
+use Doctrine\DBAL\Exception as DbalException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
@@ -14,18 +15,24 @@ use TYPO3\CMS\Scheduler\Task\ExecuteSchedulableCommandTask;
 
 class CommandIdentifierUpdateWizard implements UpgradeWizardInterface
 {
-    private $table = 'tx_scheduler_task';
+    private string $table = 'tx_scheduler_task';
+
+    public function __construct(
+        private readonly ConnectionPool $connectionPool
+    ) {}
 
     public function getIdentifier(): string
     {
         return 'falQuota_commandIdentifierUpdate';
     }
 
+    #[\Override]
     public function getTitle(): string
     {
         return 'Update command identifier in scheduler tasks';
     }
 
+    #[\Override]
     public function getDescription(): string
     {
         return '"QuotaCommand" has been renamed and method "QuotaCommand::updateStorageUsage()" has been extracted to'
@@ -34,6 +41,10 @@ class CommandIdentifierUpdateWizard implements UpgradeWizardInterface
             . ' accordingly';
     }
 
+    /**
+     * @throws DbalException
+     */
+    #[\Override]
     public function executeUpdate(): bool
     {
         $queryBuilder = $this->getQueryBuilder();
@@ -53,7 +64,7 @@ class CommandIdentifierUpdateWizard implements UpgradeWizardInterface
                     )
                 )
             )
-            ->execute();
+            ->executeQuery();
 
         while ($task = $statement->fetchAssociative()) {
             $recordId = (int)$task['uid'];
@@ -80,6 +91,10 @@ class CommandIdentifierUpdateWizard implements UpgradeWizardInterface
         return true;
     }
 
+    /**
+     * @throws DbalException
+     */
+    #[\Override]
     public function updateNecessary(): bool
     {
         $updateNeeded = false;
@@ -90,6 +105,7 @@ class CommandIdentifierUpdateWizard implements UpgradeWizardInterface
         return $updateNeeded;
     }
 
+    #[\Override]
     public function getPrerequisites(): array
     {
         return [];
@@ -100,7 +116,10 @@ class CommandIdentifierUpdateWizard implements UpgradeWizardInterface
         return $this->table;
     }
 
-    private function checkIfWizardIsRequired()
+    /**
+     * @throws DbalException
+     */
+    private function checkIfWizardIsRequired(): int
     {
         $queryBuilder = $this->getQueryBuilder();
         $queryBuilder
@@ -119,17 +138,17 @@ class CommandIdentifierUpdateWizard implements UpgradeWizardInterface
                     )
                 )
             )
-            ->execute()
+            ->executeQuery()
             ->fetchOne();
     }
 
     private function getConnection(): Connection
     {
-        return GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionFortable($this->getTable());
+        return $this->connectionPool->getConnectionFortable($this->getTable());
     }
 
     private function getQueryBuilder(): QueryBuilder
     {
-        return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->getTable());
+        return $this->connectionPool->getQueryBuilderForTable($this->getTable());
     }
 }

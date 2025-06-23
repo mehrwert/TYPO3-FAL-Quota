@@ -11,20 +11,25 @@ namespace Mehrwert\FalQuota\EventListener;
  * file 'LICENSE.md', which is part of this source code package.
  */
 
+use Doctrine\DBAL\Exception as DbalException;
 use Mehrwert\FalQuota\Handler\QuotaHandler;
 use TYPO3\CMS\Core\Resource\Event\AfterFileMovedEvent;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Set the storage size after a file was added
  */
-class SetQuotaAfterFileMoved
+readonly class SetQuotaAfterFileMoved
 {
+    public function __construct(
+        private QuotaHandler $quotaHandler
+    ) {}
+
+    /**
+     * @throws DbalException
+     */
     public function __invoke(AfterFileMovedEvent $event): void
     {
-        /** @var QuotaHandler $handler */
-        $handler = GeneralUtility::makeInstance(QuotaHandler::class);
-        $handler->updateQuotaByFolder($event->getFolder());
-        $handler->updateQuotaByFolder($event->getOriginalFolder()->getParentFolder());
+        $this->quotaHandler->updateQuotaByFolder($event->getFolder());
+        $this->quotaHandler->updateQuotaByFolder($event->getOriginalFolder()->getParentFolder());
     }
 }

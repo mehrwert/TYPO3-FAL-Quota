@@ -23,10 +23,10 @@
                 <target>FAL Treiber</target>
             </trans-unit>
             <trans-unit id="table.current_usage">
-                <target>Aktuelle Belegung</target>
+                <target>Aktuelle Nutzung</target>
             </trans-unit>
-            <trans-unit id="table.current_threshold">
-                <target>Aktuelle Auslastung</target>
+            <trans-unit id="table.current_usage_rate">
+                <target>Aktuelle Nutzungsrate</target>
             </trans-unit>
             <trans-unit id="table.soft_quota">
                 <target>Quota</target>

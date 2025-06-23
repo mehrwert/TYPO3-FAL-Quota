@@ -13,17 +13,20 @@ namespace Mehrwert\FalQuota\EventListener;
 
 use Mehrwert\FalQuota\Handler\QuotaHandler;
 use TYPO3\CMS\Core\Resource\Event\AfterFileDeletedEvent;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Set the storage size after a file was added
  */
-class SetQuotaAfterFileDeleted
+readonly class RememberStorageAfterFileDeleted
 {
+    public function __construct(
+        private QuotaHandler $quotaHandler
+    ) {}
+
     public function __invoke(AfterFileDeletedEvent $event): void
     {
-        /** @var QuotaHandler $handler */
-        $handler = GeneralUtility::makeInstance(QuotaHandler::class);
-        $handler->updateQuotaByFile($event->getFile());
+        // At this point in time, the deleted file is still listed in the sys_file database index.
+        // Remember the file storage, so that its quota can be updated in SetQuotaAfterFileRemovedFromIndex.
+        $this->quotaHandler->rememberStorageIdForDeletedFile($event->getFile());
     }
 }

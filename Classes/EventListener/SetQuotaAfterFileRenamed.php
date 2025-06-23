@@ -13,17 +13,18 @@ namespace Mehrwert\FalQuota\EventListener;
 
 use Mehrwert\FalQuota\Handler\QuotaHandler;
 use TYPO3\CMS\Core\Resource\Event\AfterFileRenamedEvent;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Set the storage size after a file was added
  */
-class SetQuotaAfterFileRenamed
+readonly class SetQuotaAfterFileRenamed
 {
+    public function __construct(
+        private QuotaHandler $quotaHandler
+    ) {}
+
     public function __invoke(AfterFileRenamedEvent $event): void
     {
-        /** @var QuotaHandler $handler */
-        $handler = GeneralUtility::makeInstance(QuotaHandler::class);
-        $handler->updateQuotaByFile($event->getFile());
+        $this->quotaHandler->updateQuotaByFile($event->getFile());
     }
 }

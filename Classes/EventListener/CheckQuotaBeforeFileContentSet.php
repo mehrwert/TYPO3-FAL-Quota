@@ -13,17 +13,18 @@ namespace Mehrwert\FalQuota\EventListener;
 
 use Mehrwert\FalQuota\Handler\QuotaHandler;
 use TYPO3\CMS\Core\Resource\Event\BeforeFileContentsSetEvent;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Check that the quota after the file content is set is not exceeded
  */
-class CheckQuotaBeforeFileContentSet
+readonly class CheckQuotaBeforeFileContentSet
 {
+    public function __construct(
+        private QuotaHandler $quotaHandler
+    ) {}
+
     public function __invoke(BeforeFileContentsSetEvent $event): void
     {
-        /** @var QuotaHandler $handler */
-        $handler = GeneralUtility::makeInstance(QuotaHandler::class);
-        $handler->preEstimateUsageAfterSetContentCommand($event->getFile(), $event->getContent(), 1576872005);
+        $this->quotaHandler->preEstimateUsageAfterSetContentCommand($event->getFile(), $event->getContent(), 1576872005);
     }
 }

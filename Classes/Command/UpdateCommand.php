@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Mehrwert\FalQuota\Command;
 
+use Doctrine\DBAL\Exception as DbalException;
 use Mehrwert\FalQuota\Utility\QuotaUtility;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Resource\StorageRepository;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -22,50 +22,46 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 final class UpdateCommand extends Command
 {
-    /**
-     * @var QuotaUtility
-     */
-    private $quotaUtility;
+    public function __construct(
+        private readonly StorageRepository $storageRepository
+    ) {
+        parent::__construct();
+    }
 
     /**
      * @inheritDoc
      */
+    #[\Override]
     protected function configure(): void
     {
         $this
             ->setDescription(
-                LocalizationUtility::translate('LLL:EXT:fal_quota/Resources/Private/Language/locallang_task.xlf:update.command.description')
+                LocalizationUtility::translate('LLL:EXT:fal_quota/Resources/Private/Language/locallang_task.xlf:update.command.description') ?? ''
             )
             ->addArgument(
                 'storage-id',
                 InputArgument::OPTIONAL,
-                LocalizationUtility::translate('LLL:EXT:fal_quota/Resources/Private/Language/locallang_task.xlf:update.command.storageUid.description')
+                LocalizationUtility::translate('LLL:EXT:fal_quota/Resources/Private/Language/locallang_task.xlf:update.command.storageUid.description') ?? ''
             );
     }
 
     /**
      * @inheritDoc
+     *
+     * @throws DbalException
      */
-    protected function initialize(InputInterface $input, OutputInterface $output): void
-    {
-        $this->quotaUtility = GeneralUtility::makeInstance(QuotaUtility::class);
-    }
-
-    /**
-     * @inheritDoc
-     */
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
         $storageId = (int)$input->getArgument('storage-id');
         if ($storageId > 0) {
-            $storages = $storageRepository->findByUid($storageId);
+            $storage = $this->storageRepository->findByUid($storageId);
+            if ($storage !== null) {
+                QuotaUtility::updateStorageUsage($storage->getUid());
+            }
         } else {
-            $storages = $storageRepository->findAll();
-        }
-        if (!empty($storages)) {
-            foreach ($storages as $storage) {
-                $this->quotaUtility->updateStorageUsage($storage->getUid());
+            foreach ($this->storageRepository->findAll() as $storage) {
+                QuotaUtility::updateStorageUsage($storage->getUid());
             }
         }
 
