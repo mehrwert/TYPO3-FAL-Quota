@@ -27,6 +27,9 @@ jobs:
       - name: Lint *.php files with PHP
         run: composer test:php:lint
 
+      - name: Lint TypoScript files
+        run: composer test:ts:lint
+
       - name: Run PHP-CS-FIXER
         run: composer cs:fix -- --dry-run
 
