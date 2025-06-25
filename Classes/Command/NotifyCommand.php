@@ -98,9 +98,8 @@ final class NotifyCommand extends Command
         ];
         if ($quotaConfiguration['soft_quota'] > 0 && $quotaConfiguration['quota_warning_threshold'] > 0) {
             $currentThreshold = (int)($quotaConfiguration['current_usage'] / $quotaConfiguration['soft_quota'] * 100);
-            if (($quotaConfiguration['current_usage'] > $quotaConfiguration['soft_quota']
-                    || $currentThreshold >= $quotaConfiguration['quota_warning_threshold'])
-                && !empty($quotaConfiguration['quota_warning_recipients'])
+            if ($quotaConfiguration['current_usage'] > $quotaConfiguration['soft_quota']
+                || $currentThreshold >= $quotaConfiguration['quota_warning_threshold']
             ) {
                 $this->sendNotification($storage, $quotaConfiguration, $currentThreshold);
             }
