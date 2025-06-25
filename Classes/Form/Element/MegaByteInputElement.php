@@ -45,6 +45,7 @@ class MegaByteInputElement extends AbstractFormElement
         $attributes['class'] = implode(' ', $classes);
 
         $html = [];
+        $html[] = $this->renderLabel($fieldId);
         $html[] = '<div class="formengine-field-item t3js-formengine-field-item">';
         $html[] = $fieldInformationHtml;
         $html[] =   '<div class="form-wizards-wrap">';

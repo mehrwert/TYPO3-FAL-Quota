@@ -1,0 +1,13 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to function method_exists\(\) with ''Networkteam\\\\SentryClient\\\\Client'' and ''captureMessage'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: ../Classes/Command/NotifyCommand.php
+
+		-
+			message: '#^Instanceof between TYPO3\\CMS\\Core\\Resource\\Folder and TYPO3\\CMS\\Core\\Resource\\Folder will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: ../Classes/Handler/QuotaHandler.php

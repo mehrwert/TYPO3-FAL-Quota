@@ -23,7 +23,7 @@ return RectorConfig::configure()
     ->withSets([
         Typo3SetList::CODE_QUALITY,
         Typo3SetList::GENERAL,
-        Typo3LevelSetList::UP_TO_TYPO3_12,
+        Typo3LevelSetList::UP_TO_TYPO3_13,
     ])
     ->withPHPStanConfigs([
         Typo3Option::PHPSTAN_FOR_RECTOR_PATH
@@ -33,8 +33,8 @@ return RectorConfig::configure()
     ])
     ->withPhpVersion(PhpVersion::PHP_83)
     ->withConfiguredRule(ExtEmConfRector::class, [
-        ExtEmConfRector::PHP_VERSION_CONSTRAINT => '8.3.0-8.3.99',
-        ExtEmConfRector::TYPO3_VERSION_CONSTRAINT => '12.4.0-12.4.99',
+        ExtEmConfRector::PHP_VERSION_CONSTRAINT => '8.4.0-8.4.99',
+        ExtEmConfRector::TYPO3_VERSION_CONSTRAINT => '13.4.0-13.4.99',
         ExtEmConfRector::ADDITIONAL_VALUES_TO_BE_REMOVED => []
     ])
     ->withSkip([

@@ -52,7 +52,7 @@ class DashboardController extends ActionController
             'localizationFile',
             'LLL:EXT:fal_quota/Resources/Private/Language/locallang_mod.xlf'
         );
-        return $moduleTemplate->renderResponse();
+        return $moduleTemplate->renderResponse('Dashboard/Index');
     }
 
     protected function getBackendUser(): BackendUserAuthentication
