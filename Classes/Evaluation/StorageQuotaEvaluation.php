@@ -41,7 +41,7 @@ class StorageQuotaEvaluation
     /**
      * Server-side validation/evaluation on opening the record
      *
-     * @param array $parameters Array with a key 'value' containing the field value from the database
+     * @param array{value:int} $parameters Array with a key 'value' containing the field value from the database
      *
      * @return int Evaluated field value
      */
