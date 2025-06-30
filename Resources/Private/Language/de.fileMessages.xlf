@@ -13,10 +13,10 @@
             <target>Verzeichnis "%s" wurde nicht erstellt.</target>
         </trans-unit>
         <trans-unit id="FileUtility.DirectoryWasNotCopiedTo">
-            <target>Verzeichnis "%s" wurde nicht nach "%s" kopiert.</target>
+            <target>Verzeichnis "%s" wurde NICHT nach "%s" kopiert.</target>
         </trans-unit>
         <trans-unit id="FileUtility.DirectoryWasNotMovedTo">
-            <target>Verzeichnis "%s" wurde nicht nach "%s" verschoben.</target>
+            <target>Verzeichnis "%s" wurde NICHT nach "%s" verschoben.</target>
         </trans-unit>
         <trans-unit id="FileUtility.DirectoryWasNotRenamed">
             <target>Verzeichnis "%s" wurde nicht umbenannt.</target>
