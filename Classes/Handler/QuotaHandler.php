@@ -48,7 +48,7 @@ class QuotaHandler
                     )
                 )
             );
-        } catch (InsufficientFolderAccessPermissionsException | \Exception) {
+        } catch (InsufficientFolderAccessPermissionsException|\Exception) {
             // Just catch the exception
         }
     }
