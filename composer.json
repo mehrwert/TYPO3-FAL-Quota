@@ -71,7 +71,7 @@
       "phpstan analyze --memory-limit=512M --verbose --configuration build/phpstan.neon"
     ],
     "cs:baseline": [
-      "phpstan analyze --memory-limit=512M --verbose --configuration build/phpstan.neon --generate-baseline build/phpstan-baseline.neon"
+      "phpstan analyze --memory-limit=512M --verbose --configuration build/phpstan.neon --generate-baseline build/phpstan-baseline.neon --allow-empty-baseline"
     ],
     "cs:fix": [
       "php-cs-fixer fix --config=build/php-cs-fixer.php --verbose --using-cache=no --diff --path-mode=intersection ."
