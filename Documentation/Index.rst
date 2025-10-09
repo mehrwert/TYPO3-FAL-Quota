@@ -20,7 +20,7 @@ FAL Quota Extension for TYPO3
   FAL, File Abstraction Layer, Quota, Diskquota, Disk-quota, Diskspace, Filesystem, Storage
 
 :Copyright:
-  2019-2024 by mehrwert intermediale kommunikation GmbH
+  2019-2025 by mehrwert intermediale kommunikation GmbH
 
 :Language:
   en

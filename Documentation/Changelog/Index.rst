@@ -20,6 +20,14 @@ The following is an overview of the changes in this extension. For more details 
       Release Description
 
  - :Version:
+      12.0.0
+   :Date:
+      2025-10-09
+   :Changes:
+      * Compatibility with TYPO3 CMS v12.4 - GH #33
+      * Adaptation of the version numbering scheme to the major versions of TYPO3
+
+ - :Version:
       1.9.2
    :Date:
       2024-07-04
