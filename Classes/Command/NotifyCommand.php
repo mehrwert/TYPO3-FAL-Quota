@@ -88,6 +88,7 @@ final class NotifyCommand extends Command
                 $errorMessage = 'FAL quota – Mail could not be sent: ' . $exception->getMessage();
                 $this->io->error($errorMessage);
 
+                /** @phpstan-ignore function.alreadyNarrowedType */
                 if (method_exists(Client::class, 'captureException')) {
                     Client::captureException($exception);
                 } else {
