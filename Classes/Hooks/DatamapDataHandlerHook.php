@@ -93,10 +93,9 @@ readonly class DatamapDataHandlerHook
             'sys_file_storage',
             $storageId,
             $storageId > 0 ? 2 : 1,
-            0,
+            null,
             1,
-            $message,
-            0
+            $message
         );
     }
 }
