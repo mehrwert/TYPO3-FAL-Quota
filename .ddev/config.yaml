@@ -4,22 +4,22 @@ docroot: .Build/web
 php_version: "8.4"
 webserver_type: apache-fpm
 xdebug_enabled: false
-additional_hostnames: []
-additional_fqdns: []
+additional_hostnames: [ ]
+additional_fqdns: [ ]
 database:
-    type: mysql
-    version: "8.0"
+  type: mysql
+  version: "8.0"
 upload_dirs:
-    - ../web/fileadmin
-    - ../web/uploads
-    - ../../var/
-webimage_extra_packages: [ant]
+  - ../web/fileadmin
+  - ../web/uploads
+  - ../../var/
+webimage_extra_packages: [ ant ]
 use_dns_when_possible: true
 timezone: Europe/Berlin
 composer_version: "2"
 web_environment:
-    - PATH=/var/www/html/.Build/bin:$PATH
-    - TYPO3_CONTEXT=Development
+  - PATH=/var/www/html/.Build/bin:$PATH
+  - TYPO3_CONTEXT=Development
 corepack_enable: false
 xhgui_https_port: "8142"
 xhgui_http_port: "8143"
