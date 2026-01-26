@@ -6,7 +6,7 @@ return [
     'file_FalQuotaDashboard' => [
         'parent' => 'file',
         'position' => ['bottom' => '*'],
-        'access' => 'user,group',
+        'access' => 'user',
         'workspaces' => 'live',
         'iconIdentifier' => 'module-fal-quota',
         'path' => '/module/file/FalQuotaDashboard',
