@@ -20,6 +20,13 @@ The following is an overview of the changes in this extension. For more details 
       Release Description
 
  - :Version:
+      12.0.1
+   :Date:
+      2026-01-27
+   :Changes:
+      * Bugfix for Backend module not selectable in be_users.userMod and be_groups.groupMods - GH #49
+
+ - :Version:
       12.0.0
    :Date:
       2025-10-09
