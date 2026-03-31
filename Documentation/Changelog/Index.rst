@@ -20,6 +20,13 @@ The following is an overview of the changes in this extension. For more details 
       Release Description
 
  - :Version:
+      13.1.0
+   :Date:
+      2026-03-30
+   :Changes:
+      * Fix PHP constraints and align w/ TYPO3 13.4 - GH #51
+
+ - :Version:
       13.0.1
    :Date:
       2026-01-27
