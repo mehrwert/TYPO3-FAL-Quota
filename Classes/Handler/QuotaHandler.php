@@ -177,12 +177,15 @@ class QuotaHandler
     protected function isOverLimit(ResourceStorage $storage): bool
     {
         $hardLimit = QuotaUtility::getHardLimit($storage);
+        if ($hardLimit <= 0) {
+            return false;
+        }
         $currentUsage = QuotaUtility::getCurrentUsage($storage);
         if ($currentUsage > $hardLimit) {
             $this->errorMessage = $this->getLocalizedMessage(
                 'over_quota',
                 [
-                    $currentUsage,
+                    QuotaUtility::numberFormat($currentUsage, 'MB', fractionDigits: 2),
                     QuotaUtility::numberFormat(QuotaUtility::getSoftQuota($storage), 'MB'),
                 ]
             );
